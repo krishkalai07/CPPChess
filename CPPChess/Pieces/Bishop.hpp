@@ -10,5 +10,17 @@
 #define Bishop_hpp
 
 #include <stdio.h>
+#include "Piece.hpp"
+
+class Bishop: public Piece {
+public:
+    
+    Bishop(int x_position, int y_position, bool is_white, Piece ***board);
+    
+    virtual ~Bishop();
+    
+    void get_possible_move_list(std::vector<Point>& point_list);
+    void get_controlled_squares(std::vector<Point>& point_list);
+};
 
 #endif /* Bishop_hpp */

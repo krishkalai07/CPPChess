@@ -21,11 +21,11 @@ protected:
     int y_position;
     bool color;
     
-    Piece **board;
+    Piece ***board;
 
 public:
-    Piece (int x_position, int y_poisition, bool is_white, Piece** board);
-    Piece (Piece& piece);
+    Piece (int x_position, int y_poisition, bool is_white, Piece ***board);
+    //Piece (Piece& piece);
     virtual ~Piece();
     
     int get_x_position();
@@ -35,8 +35,8 @@ public:
     void set_x_position(int x_position);
     void set_y_position(int y_position);
     
-    virtual void get_possible_move_list(std::vector<Point> point_list) = 0;
-    virtual void get_controlled_squares(std::vector<Point> point_list) = 0;
+    virtual void get_possible_move_list(std::vector<Point>& point_list) = 0;
+    virtual void get_controlled_squares(std::vector<Point>& point_list) = 0;
     
     void list_possible_moves(std::vector<Point>& point_list);
 };
