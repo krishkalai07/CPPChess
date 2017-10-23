@@ -8,7 +8,7 @@
 
 #include "Piece.hpp"
 
-Piece::Piece (int x_position, int y_position, bool is_white, Piece*** board) {
+Piece::Piece (int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board) {
     this->x_position = x_position;
     this->y_position = y_position;
     this->color = is_white;

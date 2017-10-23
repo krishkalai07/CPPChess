@@ -15,7 +15,7 @@
 class Rook: public Piece {
 public:
     
-    Rook(int x_position, int y_position, bool is_white, Piece ***board);
+    Rook(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board);
     
     virtual ~Rook();
     

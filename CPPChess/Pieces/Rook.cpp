@@ -8,7 +8,7 @@
 
 #include "Rook.hpp"
 
-Rook::Rook(int x_position, int y_position, bool is_white, Piece ***board):Piece(x_position, y_position, is_white, board) {
+Rook::Rook(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board):Piece(x_position, y_position, is_white, board) {
     std::cout << "Rook constructor" << std::endl;
 }
 

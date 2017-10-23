@@ -15,7 +15,7 @@
 class Queen: public Piece {
 public:
     
-    Queen(int x_position, int y_position, bool is_white, Piece ***board);
+    Queen(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board);
     
     virtual ~Queen();
     

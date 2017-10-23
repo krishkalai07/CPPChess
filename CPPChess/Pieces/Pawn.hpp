@@ -18,7 +18,7 @@ private:
     void get_capture_moves(std::vector<Point>& point_list);
 public:
     
-    Pawn(int x_position, int y_position, bool is_white, Piece ***board);
+    Pawn(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board);
     
     ~Pawn();
     

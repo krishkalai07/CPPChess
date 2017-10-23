@@ -15,7 +15,7 @@
 class Bishop: public Piece {
 public:
     
-    Bishop(int x_position, int y_position, bool is_white, Piece ***board);
+    Bishop(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board);
     
     virtual ~Bishop();
     

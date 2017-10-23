@@ -21,10 +21,10 @@ protected:
     int y_position;
     bool color;
     
-    Piece ***board;
+    std::vector<std::vector<Piece *> > board;
 
 public:
-    Piece (int x_position, int y_poisition, bool is_white, Piece ***board);
+    Piece (int x_position, int y_poisition, bool is_white, std::vector<std::vector<Piece *> >& board);
     //Piece (Piece& piece);
     virtual ~Piece();
     

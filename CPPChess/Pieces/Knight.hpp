@@ -15,7 +15,7 @@
 class Knight: public Piece {
 public:
     
-    Knight(int x_position, int y_position, bool is_white, Piece ***board);
+    Knight(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board);
     
     virtual ~Knight();
     

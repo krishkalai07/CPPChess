@@ -17,7 +17,7 @@ private:
     void get_normal_moves(std::vector<Point>& point_list);
     void get_castle_moves(std::vector<Point>& point_list);
 public:
-    King(int x_position, int y_position, bool is_white, Piece ***board);
+    King(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board);
     
     virtual ~King();
     
