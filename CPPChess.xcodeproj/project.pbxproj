@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C3AEBD81F9DB6660099C48E /* Knight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AEBD61F9DB6660099C48E /* Knight.cpp */; };
+		3C3AEBDB1F9DB6730099C48E /* Bishop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AEBD91F9DB6730099C48E /* Bishop.cpp */; };
+		3C3AEBDE1F9DB6790099C48E /* Queen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AEBDC1F9DB6790099C48E /* Queen.cpp */; };
+		3C3AEBE11F9DB67E0099C48E /* King.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AEBDF1F9DB67E0099C48E /* King.cpp */; };
 		3C789C5A1F9C614F00873CB2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C789C591F9C614F00873CB2 /* main.cpp */; };
+		3C789C631F9C643400873CB2 /* Piece.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C789C611F9C643400873CB2 /* Piece.cpp */; };
+		3C789C6D1F9C708B00873CB2 /* Point.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C789C6B1F9C708B00873CB2 /* Point.cpp */; };
+		3C789C711F9DB56F00873CB2 /* Pawn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3C789C6F1F9DB56F00873CB2 /* Pawn.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +30,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3C3AEBD61F9DB6660099C48E /* Knight.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Knight.cpp; sourceTree = "<group>"; };
+		3C3AEBD71F9DB6660099C48E /* Knight.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Knight.hpp; sourceTree = "<group>"; };
+		3C3AEBD91F9DB6730099C48E /* Bishop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Bishop.cpp; sourceTree = "<group>"; };
+		3C3AEBDA1F9DB6730099C48E /* Bishop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bishop.hpp; sourceTree = "<group>"; };
+		3C3AEBDC1F9DB6790099C48E /* Queen.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Queen.cpp; sourceTree = "<group>"; };
+		3C3AEBDD1F9DB6790099C48E /* Queen.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Queen.hpp; sourceTree = "<group>"; };
+		3C3AEBDF1F9DB67E0099C48E /* King.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = King.cpp; sourceTree = "<group>"; };
+		3C3AEBE01F9DB67E0099C48E /* King.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = King.hpp; sourceTree = "<group>"; };
 		3C789C561F9C614F00873CB2 /* CPPChess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CPPChess; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C789C591F9C614F00873CB2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		3C789C611F9C643400873CB2 /* Piece.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Piece.cpp; sourceTree = "<group>"; };
+		3C789C621F9C643400873CB2 /* Piece.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Piece.hpp; sourceTree = "<group>"; };
+		3C789C6B1F9C708B00873CB2 /* Point.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Point.cpp; sourceTree = "<group>"; };
+		3C789C6C1F9C708B00873CB2 /* Point.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Point.hpp; sourceTree = "<group>"; };
+		3C789C6F1F9DB56F00873CB2 /* Pawn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Pawn.cpp; sourceTree = "<group>"; };
+		3C789C701F9DB56F00873CB2 /* Pawn.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Pawn.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,8 +79,30 @@
 			isa = PBXGroup;
 			children = (
 				3C789C591F9C614F00873CB2 /* main.cpp */,
+				3C789C6B1F9C708B00873CB2 /* Point.cpp */,
+				3C789C6C1F9C708B00873CB2 /* Point.hpp */,
+				3C789C601F9C642000873CB2 /* Pieces */,
 			);
 			path = CPPChess;
+			sourceTree = "<group>";
+		};
+		3C789C601F9C642000873CB2 /* Pieces */ = {
+			isa = PBXGroup;
+			children = (
+				3C789C611F9C643400873CB2 /* Piece.cpp */,
+				3C789C621F9C643400873CB2 /* Piece.hpp */,
+				3C3AEBDF1F9DB67E0099C48E /* King.cpp */,
+				3C3AEBE01F9DB67E0099C48E /* King.hpp */,
+				3C3AEBDC1F9DB6790099C48E /* Queen.cpp */,
+				3C3AEBDD1F9DB6790099C48E /* Queen.hpp */,
+				3C3AEBD91F9DB6730099C48E /* Bishop.cpp */,
+				3C3AEBDA1F9DB6730099C48E /* Bishop.hpp */,
+				3C3AEBD61F9DB6660099C48E /* Knight.cpp */,
+				3C3AEBD71F9DB6660099C48E /* Knight.hpp */,
+				3C789C6F1F9DB56F00873CB2 /* Pawn.cpp */,
+				3C789C701F9DB56F00873CB2 /* Pawn.hpp */,
+			);
+			path = Pieces;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -119,7 +162,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C789C631F9C643400873CB2 /* Piece.cpp in Sources */,
+				3C789C6D1F9C708B00873CB2 /* Point.cpp in Sources */,
+				3C3AEBE11F9DB67E0099C48E /* King.cpp in Sources */,
+				3C3AEBD81F9DB6660099C48E /* Knight.cpp in Sources */,
 				3C789C5A1F9C614F00873CB2 /* main.cpp in Sources */,
+				3C3AEBDB1F9DB6730099C48E /* Bishop.cpp in Sources */,
+				3C789C711F9DB56F00873CB2 /* Pawn.cpp in Sources */,
+				3C3AEBDE1F9DB6790099C48E /* Queen.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
