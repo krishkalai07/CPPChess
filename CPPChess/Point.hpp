@@ -18,10 +18,10 @@ public:
     int y;
     
     Point (int,int);
-    Point (Point&);
+//    Point (Point&);
     ~Point();
     
-    bool operator==(Point&);
+    bool operator==(Point &point);
     friend std::ostream& operator<<(std::ostream&, Point&);
 };
 

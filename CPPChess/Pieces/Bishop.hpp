@@ -21,6 +21,7 @@ public:
     
     void get_possible_move_list(std::vector<Point>& point_list);
     void get_controlled_squares(std::vector<Point>& point_list);
+    bool validate_move(int x, int y);
 };
 
 #endif /* Bishop_hpp */

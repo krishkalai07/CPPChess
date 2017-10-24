@@ -17,11 +17,12 @@
 
 class Piece {
 protected:
+    Point *position;
     int x_position;
     int y_position;
     bool color;
     
-    std::vector<std::vector<Piece *> > board;
+    std::vector<std::vector<Piece *> >& board;
 
 public:
     Piece (int x_position, int y_poisition, bool is_white, std::vector<std::vector<Piece *> >& board);
@@ -37,8 +38,7 @@ public:
     
     virtual void get_possible_move_list(std::vector<Point>& point_list) = 0;
     virtual void get_controlled_squares(std::vector<Point>& point_list) = 0;
-    
-    void list_possible_moves(std::vector<Point>& point_list);
+    virtual bool validate_move(int x, int y) = 0;
 };
 
 #endif /* Piece_hpp */

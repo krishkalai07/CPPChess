@@ -13,11 +13,20 @@ Point::Point(int x, int y) {
     this->y = y;
 }
 
+//Point::Point(Point &point) {
+//    this->x = point.x;
+//    this->y = point.y;
+//}
+
+Point::~Point(){
+    
+}
+
 bool Point::operator==(Point &point) {
     return this->x == point.x && this->y == point.y;
 }
 
-std::ostream& operator<<(std::ostream& os, Point p) {
+std::ostream& operator<<(std::ostream& os, Point &p) {
     os << "(" << p.x << " " << p.y << ")";
     return os;
 }

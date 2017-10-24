@@ -14,6 +14,8 @@
 
 class Pawn : public Piece {
 private:
+    bool moved_two_spaces_last_move;
+    
     void get_forward_moves(std::vector<Point>& point_list);
     void get_capture_moves(std::vector<Point>& point_list);
 public:
@@ -22,8 +24,10 @@ public:
     
     ~Pawn();
     
+    bool did_move_two_spaces_last_move ();
     void get_possible_move_list(std::vector<Point>& point_list);
     void get_controlled_squares(std::vector<Point>& point_list);
+    bool validate_move(int x, int y);
 };
 
 #endif /* Pawn_hpp */

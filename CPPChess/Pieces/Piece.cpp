@@ -8,22 +8,16 @@
 
 #include "Piece.hpp"
 
-Piece::Piece (int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board) {
+Piece::Piece (int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board): board(board) {
     this->x_position = x_position;
     this->y_position = y_position;
+    this->position = new Point(x_position, y_position);
     this->color = is_white;
-    this->board = board;
+    //this->board = board;
 }
 
-//Piece::Piece (Piece& piece): Piece(piece.x_position, piece.y_position, piece.color, piece.board) {
-//    this->x_position = piece.x_position;
-//    this->y_position = piece.y_position;
-//    this->color = piece.color;
-//    this->board = piece.board;
-//}
-
 Piece::~Piece() {
-    std::cout << "Piece Destructor" << std::endl;
+    delete position;
 }
 
 int Piece::get_x_position() {
