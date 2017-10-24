@@ -27,6 +27,9 @@ public:
     bool did_move_two_spaces_last_move ();
     void get_possible_move_list(std::vector<Point>& point_list);
     void get_controlled_squares(std::vector<Point>& point_list);
+    
+    void set_move_two_spaces (bool did_move);
+    
     bool validate_move(int x, int y);
 };
 

@@ -91,6 +91,10 @@ void Pawn::get_capture_moves(std::vector<Point>& point_list) {
     }
 }
 
+void Pawn::set_move_two_spaces (bool did_move) {
+    moved_two_spaces_last_move = did_move;
+}
+
 bool Pawn::validate_move(int x, int y) {
     int direction = color ? -1 : 1;
     

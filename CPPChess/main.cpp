@@ -35,8 +35,7 @@ int main(int argc, const char * argv[]) {
     std::vector<Point> possible_moves;
     std::vector<Point> white_control;
     std::vector<Point> black_control;
-    //std::fstream fin("KingsPawnOpening.txt");
-    std::fstream fin("PawnPlay.txt");
+    std::fstream fin("KasparovVVeselin.txt");
     std::string input;
     int from_x = 0;
     int from_y = 0;
@@ -53,6 +52,7 @@ int main(int argc, const char * argv[]) {
     
     init_board(board, white_control, black_control);
     print_board(board);
+    std::cout << std::endl;
     
     while (!fin.eof()) {
         fin >> input;
@@ -72,14 +72,27 @@ int main(int argc, const char * argv[]) {
             continue;
         }
         if (!viewing_piece->validate_move(to_x, to_y)) {
+            std::cout << "WHY" << std::endl;
+        }
+        if (!viewing_piece->validate_move(to_x, to_y)) {
             std::cout << "Entered illegal move" << std::endl;
             std::cout << std::endl;
             continue;
+        }
+    
+        if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
+            Pawn *my_pawn = dynamic_cast<Pawn *>(viewing_piece);
+            if (from_x != to_x) {
+                if (board[to_x][to_y] == NULL) {
+                    board[to_x][my_pawn->isWhite() ? to_y + 1 : to_y - 1] = NULL;
+                }
+            }
         }
         
         move_piece(board, from_x, from_y, to_x, to_y);
         
         if (dynamic_cast<King *>(viewing_piece) != NULL) {
+            // Castle a king
             int rank = viewing_piece->isWhite() ? 7 : 0;
             
             if (to_x - from_x > 0) {
@@ -89,6 +102,21 @@ int main(int argc, const char * argv[]) {
             else {
                 // Castle Queenside
                 move_piece(board, 0, rank, 3, rank);
+            }
+        }
+        else if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
+            Pawn *my_pawn = dynamic_cast<Pawn *>(viewing_piece);
+            if (abs(from_y - to_y) == 2) {
+                my_pawn->set_move_two_spaces(true);
+            }
+            
+            for (int i = 0; i < BOARD_SIZE; i++) {
+                for (int j = 0; j < BOARD_SIZE; j++) {
+                    Pawn *pawn = dynamic_cast<Pawn *>(board[i][j]);
+                    if (pawn != NULL && my_pawn != pawn) {
+                        pawn->set_move_two_spaces(false);
+                    }
+                }
             }
         }
         

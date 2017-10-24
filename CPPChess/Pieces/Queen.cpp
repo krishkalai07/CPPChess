@@ -37,20 +37,13 @@ bool Queen::validate_move(int to_x, int to_y) {
         (abs(x_position - to_x) == 0 && abs(y_position - to_y) != 0) ||
         (abs(x_position - to_x) == abs(y_position - to_y))) {
         for (int i = 1; i < abs(x_position - to_x); i++) {
-            delta_x = x_position + (x_position - to_x < 0 ? i : -i);
-            delta_y = y_position + (y_position - to_y < 0 ? i : -i);
+            delta_x = (x_position - to_x < 0 ? x_position + i : (x_position - to_x > 0 ? x_position-i : x_position));
+            delta_y = (y_position - to_y < 0 ? y_position + i : (y_position - to_y > 0 ? y_position-i : y_position));
             if (board[delta_x][delta_y] != NULL) {
                 return false;
             }
         }
-        if (board[to_x][to_y] != NULL) {
-            if (board[to_x][to_y]->isWhite() != color) {
-                return true;
-            }
-        }
-        else {
-            return true;
-        }
+        return board[to_x][to_y] == NULL || board[to_x][to_y]->isWhite() != color;
     }
     return false;
 }
