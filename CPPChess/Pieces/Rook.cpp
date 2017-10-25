@@ -51,3 +51,7 @@ bool Rook::validate_move(int to_x, int to_y) {
     }
     return false;
 }
+
+char Rook::get_abbreviation() {
+    return color ? 'R' : 'r';
+}

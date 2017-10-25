@@ -9,12 +9,11 @@
 #include "Pawn.hpp"
 
 Pawn::Pawn(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board): Piece(x_position, y_position, is_white, board) {
-    //std::cout << "Pawn constructor" << std::endl;
     moved_two_spaces_last_move = false;
 }
 
 Pawn::~Pawn() {
-    //std::cout << "Pawn destructor" << std::endl;
+    
 }
 
 bool Pawn::did_move_two_spaces_last_move () {
@@ -133,4 +132,8 @@ bool Pawn::validate_move(int x, int y) {
     }
     
     return false;
+}
+
+char Pawn::get_abbreviation() {
+    return color ? 'P' : 'p';
 }

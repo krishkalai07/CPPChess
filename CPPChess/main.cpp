@@ -28,6 +28,9 @@ void print_board (std::vector<std::vector<Piece *> >& board);
 void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_y, int to_x, int to_y);
 bool is_valid_input (std::string input);
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y);
+std::string compress_board (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number);
+std::string index_to_algebraic(int x, int y);
+int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::string current);
 
 int main(int argc, const char * argv[]) {
     std::vector<std::vector<Piece *> > board;
@@ -35,13 +38,18 @@ int main(int argc, const char * argv[]) {
     std::vector<Point> possible_moves;
     std::vector<Point> white_control;
     std::vector<Point> black_control;
+    std::vector<std::string> FEN_values;
     std::fstream fin("KasparovVVeselin.txt");
     std::string input;
+    int halfmove_counter = 0;
+    int move_number = 1;
     int from_x = 0;
     int from_y = 0;
     int to_x = 0;
     int to_y = 0;
-    bool game_ended = false;
+    bool turn = true; // 1 = white, 0 = black
+    bool draw = false;
+    //bool game_ended = false;
     
     for (int i = 0; i < BOARD_SIZE; i++) {
         board.push_back(file);
@@ -51,11 +59,12 @@ int main(int argc, const char * argv[]) {
     }
     
     init_board(board, white_control, black_control);
-    print_board(board);
+    //print_board(board);
     std::cout << std::endl;
     
     while (!fin.eof()) {
         fin >> input;
+        //std::cin >> input;
         std::cout << input << std::endl;
         if (!is_valid_input(input)) {
             break;
@@ -63,8 +72,8 @@ int main(int argc, const char * argv[]) {
     
         convert_input(input, from_x, from_y, to_x, to_y);
         
-        std::cout << "From: " << from_x << " " << from_y << std::endl;
-        std::cout << "To: " << to_x << " " << to_y << std::endl;
+//        std::cout << "From: " << from_x << " " << from_y << std::endl;
+//        std::cout << "To: " << to_x << " " << to_y << std::endl;
         
         Piece *viewing_piece = board[from_x][from_y];
         
@@ -72,7 +81,7 @@ int main(int argc, const char * argv[]) {
             continue;
         }
         if (!viewing_piece->validate_move(to_x, to_y)) {
-            std::cout << "WHY" << std::endl;
+            std::cout << "GIMME A BREAKPOINT" << std::endl;
         }
         if (!viewing_piece->validate_move(to_x, to_y)) {
             std::cout << "Entered illegal move" << std::endl;
@@ -89,38 +98,54 @@ int main(int argc, const char * argv[]) {
             }
         }
         
+        halfmove_counter++;
+        if (board[to_x][to_y] != NULL) {
+            halfmove_counter = 0;
+        }
         move_piece(board, from_x, from_y, to_x, to_y);
+        if (!turn) {
+            move_number++;
+        }
+        turn = !turn;
         
         if (dynamic_cast<King *>(viewing_piece) != NULL) {
             // Castle a king
             int rank = viewing_piece->isWhite() ? 7 : 0;
             
-            if (to_x - from_x > 0) {
+            if (to_x - from_x == 2) {
                 // Castle Kingside
                 move_piece(board, 7, rank, 5, rank);
             }
-            else {
+            else if (to_x - from_x == -2){
                 // Castle Queenside
                 move_piece(board, 0, rank, 3, rank);
             }
         }
         else if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
             Pawn *my_pawn = dynamic_cast<Pawn *>(viewing_piece);
+            halfmove_counter = 0;
+            
             if (abs(from_y - to_y) == 2) {
                 my_pawn->set_move_two_spaces(true);
             }
-            
-            for (int i = 0; i < BOARD_SIZE; i++) {
-                for (int j = 0; j < BOARD_SIZE; j++) {
-                    Pawn *pawn = dynamic_cast<Pawn *>(board[i][j]);
-                    if (pawn != NULL && my_pawn != pawn) {
-                        pawn->set_move_two_spaces(false);
-                    }
+        }
+        
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                Pawn *pawn = dynamic_cast<Pawn *>(board[i][j]);
+                if (pawn != NULL && dynamic_cast<Pawn *>(viewing_piece) != pawn) {
+                    pawn->set_move_two_spaces(false);
                 }
             }
         }
         
         print_board(board);
+        
+        if (halfmove_counter >= 50) {
+            draw = true;
+        }
+        
+        std::cout << compress_board(board, turn, halfmove_counter, move_number) << std::endl;
         std::cout << std::endl;
     }
     
@@ -241,6 +266,109 @@ void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_
     viewing_piece->set_x_position(to_x);
     viewing_piece->set_y_position(to_y);
     board[from_x][from_y] = NULL;
+}
+
+std::string compress_board (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number) {
+    std::string compression;
+    int empty_squares = 0;
+    bool en_passant_pawn_exists = false;
+    bool castle_true = false;
     
-    //delete viewing_piece;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        empty_squares = 0;
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            if (board[j][i] == NULL) {
+                empty_squares++;
+            }
+            else {
+                if (empty_squares != 0) {
+                    compression += '0'+empty_squares;
+                }
+                compression += board[j][i]->get_abbreviation();
+                empty_squares = 0;
+            }
+        }
+        
+        if (empty_squares != 0) {
+            compression += '0'+empty_squares;
+        }
+    
+        if (i != 7) {
+            compression += '/';
+        }
+    }
+    
+    compression += turn ? " w " : " b ";
+    
+    if (board[4][7] != NULL && dynamic_cast<King *>(board[4][7]) != NULL && !dynamic_cast<King *>(board[4][7])->did_move()) {
+        if (board[7][7] != NULL && dynamic_cast<Rook *>(board[7][7]) != NULL && !dynamic_cast<Rook *>(board[7][7])->did_move()) {
+            compression += "K";
+            castle_true = true;
+        }
+        
+        if (board[0][7] != NULL && dynamic_cast<Rook *>(board[0][7]) != NULL && !dynamic_cast<Rook *>(board[0][7])->did_move()) {
+            compression += "Q";
+            castle_true = true;
+        }
+    }
+    
+    if (board[4][0] != NULL && dynamic_cast<King *>(board[4][0]) != NULL && !dynamic_cast<King *>(board[4][0])->did_move()) {
+        if (board[7][0] != NULL && dynamic_cast<Rook *>(board[7][0]) != NULL && !dynamic_cast<Rook *>(board[7][0])->did_move()) {
+            compression += "k";
+            castle_true = true;
+        }
+        
+        if (board[0][0] != NULL && dynamic_cast<Rook *>(board[0][0]) != NULL && !dynamic_cast<Rook *>(board[0][0])->did_move()) {
+            compression += "q";
+            castle_true = true;
+        }
+    }
+    
+    if (!castle_true) {
+        compression += '-';
+    }
+    
+    compression += ' ';
+    for (int i = 3; i <= 4; i++) {
+        for (int j = 0; j < 7; j++) {
+            if (board[j][i] != NULL) {
+                if (dynamic_cast<Pawn *>(board[j][i]) != NULL) {
+                    if(dynamic_cast<Pawn *>(board[j][i])->did_move_two_spaces_last_move()) {
+                        int direction = board[j][i]->isWhite() ? 1 : -1;
+                        compression += index_to_algebraic(j, i + direction);
+                        en_passant_pawn_exists = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    if (!en_passant_pawn_exists) {
+        compression += '-';
+    }
+
+    compression += " " + std::to_string(halfmove_counter);
+    compression += " " + std::to_string(move_number);
+    
+    return compression;
+}
+
+std::string index_to_algebraic(int x, int y) {
+    std::string algebraic;
+    
+    algebraic += 'a' + x;
+    algebraic += '1' + (7-y);
+    
+    return algebraic;
+}
+
+int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::string current) {
+    int count = 0;
+    for (int i = 0; i < FEN_positions.size(); i++) {
+        if (current == FEN_positions[i]) {
+            count++;
+        }
+    }
+    return count;
 }

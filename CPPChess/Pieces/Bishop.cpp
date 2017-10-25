@@ -44,3 +44,7 @@ bool Bishop::validate_move(int to_x, int to_y) {
     }
     return false;
 }
+
+char Bishop::get_abbreviation() {
+    return color ? 'B' : 'b';
+}

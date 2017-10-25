@@ -39,6 +39,7 @@ public:
     virtual void get_possible_move_list(std::vector<Point>& point_list) = 0;
     virtual void get_controlled_squares(std::vector<Point>& point_list) = 0;
     virtual bool validate_move(int x, int y) = 0;
+    virtual char get_abbreviation() = 0;
 };
 
 #endif /* Piece_hpp */

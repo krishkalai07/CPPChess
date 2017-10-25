@@ -43,7 +43,19 @@ bool Queen::validate_move(int to_x, int to_y) {
                 return false;
             }
         }
-        return board[to_x][to_y] == NULL || board[to_x][to_y]->isWhite() != color;
+        if (board[to_x][to_y] == NULL) {
+            return true;
+        }
+        else {
+            if (board[to_x][to_y]->isWhite() != color) {
+                return true;
+            }
+        }
+        //return board[to_x][to_y] == NULL || board[to_x][to_y]->isWhite() != color;
     }
     return false;
+}
+
+char Queen::get_abbreviation() {
+    return color ? 'Q' : 'q';
 }

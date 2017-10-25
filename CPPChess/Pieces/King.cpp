@@ -17,6 +17,10 @@ King::~King() {
     
 }
 
+bool King::did_move() {
+    return has_moved;
+}
+
 void King::get_possible_move_list(std::vector<Point>& point_list) {
     
 }
@@ -67,4 +71,8 @@ bool King::validate_move(int x, int y) {
         }
     }
     return false;
+}
+
+char King::get_abbreviation() {
+    return color ? 'K' : 'k';
 }
