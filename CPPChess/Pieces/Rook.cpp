@@ -26,6 +26,7 @@ void Rook::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void Rook::get_controlled_squares(std::vector<Point>& point_list) {
+    return;
     bool stop_upward = false;
     bool stop_rightward = false;
     bool stop_downward = false;

@@ -26,6 +26,7 @@ void Pawn::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void Pawn::get_controlled_squares(std::vector<Point>& point_list) {
+    return;
     int movement_direction = color ? -1 : 1;
     
     if (x_position != 0) {
@@ -105,7 +106,7 @@ void Pawn::set_move_two_spaces (bool did_move) {
 bool Pawn::validate_move(int x, int y) {
     int direction = color ? -1 : 1;
     
-    if (x_position == x && y_position) {
+    if (x_position == x && y_position == y) {
         return false;
     }
     

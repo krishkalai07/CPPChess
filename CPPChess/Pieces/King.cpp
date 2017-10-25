@@ -26,6 +26,7 @@ void King::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void King::get_controlled_squares(std::vector<Point>& point_list) {
+    return;
     for (int i = -1; i <= 1; i++) {
         for (int j = -1; j <= 1; j++) {
             // Prevent checking the square it's on.

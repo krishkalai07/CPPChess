@@ -24,7 +24,6 @@
 
 void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& white_control, std::vector<Point>& black_control);
 void print_board (std::vector<std::vector<Piece *> >& board);
-
 void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_y, int to_x, int to_y);
 bool is_valid_input (std::string input);
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y);
@@ -35,6 +34,8 @@ std::string get_castling_rights (std::vector<std::vector<Piece *> >& board);
 std::string get_en_passant_rights (std::vector<std::vector<Piece *> >& board);
 std::string index_to_algebraic(int x, int y);
 int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::string current);
+bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int from_y, int to_x, int to_y, bool turn);
+bool vector_contains_point(std::vector<Point>& point_list, int x, int y);
 
 int main(int argc, const char * argv[]) {
     std::vector<std::vector<Piece *> > board;
@@ -64,37 +65,32 @@ int main(int argc, const char * argv[]) {
     
     init_board(board, white_control, black_control);
     print_board(board);
-    std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
+//    std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
     FEN_values.push_back(compress_board(board));
-    std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
-    std::cout << std::endl;
+//    std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
+//    std::cout << std::endl;
     
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             if (board[i][j] != NULL) {
-                if (board[i][j]->isWhite()) {
-                    board[i][j]->get_controlled_squares(white_control);
-                }
-                else {
-                    board[i][j]->get_controlled_squares(black_control);
-                }
+                board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control);
             }
         }
     }
     
-    for (int i = 0; i < white_control.size(); i++) {
-        std::cout << white_control[i] << " ";
-    }
-    std::cout << std::endl;
-    for (int i = 0; i < black_control.size(); i++) {
-        std::cout << black_control[i] << " ";
-    }
-    std::cout << std::endl;
+//    for (int i = 0; i < white_control.size(); i++) {
+//        std::cout << white_control[i] << " ";
+//    }
+//    std::cout << std::endl;
+//    for (int i = 0; i < black_control.size(); i++) {
+//        std::cout << black_control[i] << " ";
+//    }
+//    std::cout << std::endl;
     
     while (!draw) {
-        fin >> input;
-        //std::cin >> input;
-        std::cout << input << std::endl;
+        //fin >> input;
+        std::cin >> input;
+        //std::cout << input << std::endl;
         if (!is_valid_input(input)) {
             break;
         }
@@ -119,7 +115,16 @@ int main(int argc, const char * argv[]) {
             std::cout << std::endl;
             continue;
         }
-    
+        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+            std::cout << "GIMME ANOTHER BREAKPOINT" << std::endl;
+        }
+        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+            std::cout << "Move puts king in check" << std::endl;
+            std::cout << std::endl;
+            print_board(board);
+            continue;
+        }
+        
         if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
             Pawn *my_pawn = dynamic_cast<Pawn *>(viewing_piece);
             if (from_x != to_x) {
@@ -176,9 +181,17 @@ int main(int argc, const char * argv[]) {
             draw = true;
         }
         
-        std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] != NULL) {
+                    board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control);
+                }
+            }
+        }
+        
+//        std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
         FEN_values.push_back(compress_board(board));
-        std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
+//        std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
         if (number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) >= 3) {
             draw = true;
         }
@@ -433,4 +446,66 @@ std::string get_en_passant_rights (std::vector<std::vector<Piece *> >& board) {
     }
     
     return en_passant_destination;
+}
+
+bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int from_y, int to_x, int to_y, bool turn) {
+    std::vector<Point> white_control;
+    std::vector<Point> black_control;
+    King *white_king = NULL;
+    King *black_king = NULL;
+    
+    std::cout << "SIMULATION BEGINS" << std::endl;
+    
+    move_piece(board, from_x, from_y, to_x, to_y);
+    
+//    std::cout << "SIMULATED BOARD BEGINS ---------------------------" << std::endl;
+//    print_board(board);
+//    std::cout << "SIMULATED BOARD ENDS ---------------------------" << std::endl;
+    
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            if (board[i][j] != NULL) {
+                board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control);
+                if (dynamic_cast<King *>(board[i][j]) != NULL) {
+                    if (board[i][j]->isWhite()) {
+                        white_king = dynamic_cast<King *>(board[i][j]);
+                    }
+                    else {
+                        black_king = dynamic_cast<King *>(board[i][j]);
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < white_control.size(); i++) {
+        std::cout << white_control[i] << " ";
+    }
+    std::cout << std::endl;
+    
+    if (turn) {
+        if (vector_contains_point(black_control, white_king->get_x_position(), white_king->get_y_position())) {
+            std::cout << "SIMULATION ENDS" << std::endl;
+            return false;
+        }
+    }
+    else {
+        if (vector_contains_point(white_control, black_king->get_x_position(), black_king->get_y_position())) {
+            std::cout << "SIMULATION ENDS" << std::endl;
+            return false;
+        }
+    }
+    
+    std::cout << "SIMULATION ENDS" << std::endl;
+    
+    return true;
+}
+
+bool vector_contains_point(std::vector<Point>& point_list, int x, int y) {
+    for (int i = 0; i < point_list.size(); i++) {
+        if (x == point_list[i].x && y == point_list[i].y) {
+            return true;
+        }
+    }
+    return false;
 }

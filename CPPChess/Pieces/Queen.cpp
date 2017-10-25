@@ -22,6 +22,7 @@ void Queen::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void Queen::get_controlled_squares(std::vector<Point>& point_list) {
+    return;
     bool stop_up_left = false;
     bool stop_up_right = false;
     bool stop_down_left = false;

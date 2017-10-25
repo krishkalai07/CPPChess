@@ -21,6 +21,7 @@ void Knight::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void Knight::get_controlled_squares(std::vector<Point>& point_list) {
+    return;
     for (int i = -2; i <= 2; i++) {
         for (int j = -2; j <= 2; j++) {
             if (i == 0 || j == 0 || i == j || i == -j || -i == j) {
@@ -39,7 +40,8 @@ bool Knight::validate_move(int x, int y) {
         return false;
     }
     
-    if (abs(abs(x_position - x) - abs(y_position - y)) == 1) {
+    if ((abs(x_position - x) == 2 && abs(y_position - y) == 1) || (abs(x_position - x) == 1 && abs(y_position - y) == 2)) {
+    //if (abs(abs(x_position - x) - abs(y_position - y)) == 1) {
         if (board[x][y] == NULL) {
             return true;
         }

@@ -57,7 +57,7 @@ void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
             if (board[x_position - i][y_position + i] != NULL) {
                 stop_down_left = true;
             }
-            point_list.push_back(Point(x_position + i, y_position + i));
+            point_list.push_back(Point(x_position - i, y_position + i));
         }
         
         //down right
@@ -68,7 +68,7 @@ void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
             if (board[x_position + i][y_position + i] != NULL) {
                 stop_down_right = true;
             }
-            point_list.push_back(Point(x_position - i, y_position + i));
+            point_list.push_back(Point(x_position + i, y_position + i));
         }
     }
 }
