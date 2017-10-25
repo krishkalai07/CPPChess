@@ -89,7 +89,7 @@ void Pawn::get_capture_moves(std::vector<Point>& point_list) {
             }
         }
         
-        if (y_position == color ? 3 : 4) {
+        if (y_position == (color ? 3 : 4)) {
             if (board[x_position - 1][y_position + movement_direction] != NULL) {
                 Pawn *casted_piece = dynamic_cast<Pawn *>(board[x_position - 1][y_position]);
                 if (casted_piece != NULL) {

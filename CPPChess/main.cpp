@@ -44,7 +44,7 @@ int main(int argc, const char * argv[]) {
     std::vector<Point> white_control;
     std::vector<Point> black_control;
     std::vector<std::string> FEN_values;
-    std::fstream fin("CastlingRules.txt");
+    std::fstream fin("TheImmortalGame.txt");
     std::string input;
     int halfmove_counter = 0;
     int move_number = 1;
@@ -68,7 +68,7 @@ int main(int argc, const char * argv[]) {
 //    std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
     FEN_values.push_back(compress_board(board));
 //    std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
-//    std::cout << std::endl;
+    std::cout << std::endl;
     
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
@@ -82,19 +82,11 @@ int main(int argc, const char * argv[]) {
         }
     }
     
-//    for (int i = 0; i < white_control.size(); i++) {
-//        std::cout << white_control[i] << " ";
-//    }
-//    std::cout << std::endl;
-//    for (int i = 0; i < black_control.size(); i++) {
-//        std::cout << black_control[i] << " ";
-//    }
-//    std::cout << std::endl;
-    
     while (!draw && !game_ended && !fin.eof()) {
         fin >> input;
+        std::cout << (turn ? std::to_string(move_number) + " " : "") << input << std::endl;
 //        std::cin >> input;
-        std::cout << input << std::endl;
+        
         if (!is_valid_input(input)) {
             break;
         }
@@ -111,21 +103,21 @@ int main(int argc, const char * argv[]) {
             std::cout << "Can't move that piece, wrong color" << std::endl;
             continue;
         }
-//        if (!viewing_piece->validate_move(to_x, to_y)) {
-//            std::cout << "GIMME A BREAKPOINT" << std::endl;
-//        }
+        
+        if (!viewing_piece->validate_move(to_x, to_y)) {
+            std::cout << "GIMME A BREAKPOINT" << std::endl;
+        }
         if (!viewing_piece->validate_move(to_x, to_y)) {
             std::cout << "Entered illegal move" << std::endl;
             std::cout << std::endl;
             continue;
         }
-//        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
-//            std::cout << "GIMME ANOTHER BREAKPOINT" << std::endl;
-//        }
+        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+            std::cout << "GIMME ANOTHER BREAKPOINT" << std::endl;
+        }
         if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
             std::cout << "Move puts your king in check" << std::endl;
             std::cout << std::endl;
-            print_board(board);
             continue;
         }
         
@@ -187,7 +179,7 @@ int main(int argc, const char * argv[]) {
         }
         
         King *king = NULL;
-        int last_index = 0;
+        possible_moves.clear();
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] != NULL) {
@@ -195,23 +187,34 @@ int main(int argc, const char * argv[]) {
                         king = dynamic_cast<King *>(board[i][j]);
                     }
                     board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control);
-                    
+                }
+            }
+        }
+        
+        int count = 0;
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                if (board[i][j] != NULL) {
                     if (board[i][j]->isWhite() == turn) {
+                        possible_moves.clear();
                         board[i][j]->get_possible_move_list(possible_moves);
                         
-                        for (int k = last_index; last_index < possible_moves.size(); k++, last_index++) {
-                            if (!simulate_move(board, board[i][j]->get_x_position(), board[i][j]->get_y_position(), possible_moves[i].x, possible_moves[i].y, turn)) {
+                        int t_from_x = board[i][j]->get_x_position();
+                        int t_from_y = board[i][j]->get_y_position();
+                        
+                        for (int i = 0 ; i < possible_moves.size(); i++) {
+                            if (!simulate_move(board, t_from_x, t_from_y, possible_moves[i].x, possible_moves[i].y, turn)) {
                                 possible_moves.erase(possible_moves.begin() + i);
                                 i--;
-                                last_index--;
                             }
                         }
+                        count += possible_moves.size();
                     }
                 }
             }
         }
         
-        if (possible_moves.size() == 0) {
+        if (count == 0) {
             if (king->is_in_check()) {
                 game_ended = true;
             }
@@ -348,6 +351,7 @@ void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int 
 }
 
 void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_y, int to_x, int to_y) {
+//    std::cout << "move_piece::from_coords: " << from_x << " " << from_y << std::endl;
     Piece *viewing_piece = board[from_x][from_y];
     board[to_x][to_y] = viewing_piece;
     viewing_piece->set_x_position(to_x);
@@ -492,6 +496,8 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
     King *white_king = NULL;
     King *black_king = NULL;
     
+//    std::cout << "simulate::from_coords: " << from_x << " " << from_y << std::endl;
+    
     move_piece(board, from_x, from_y, to_x, to_y);
     
     for (int i = 0; i < BOARD_SIZE; i++) {
@@ -512,15 +518,18 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
     
     if (turn) {
         if (vector_contains_point(black_control, white_king->get_x_position(), white_king->get_y_position())) {
+            move_piece(board, to_x, to_y, from_x, from_y);
             return false;
         }
     }
     else {
         if (vector_contains_point(white_control, black_king->get_x_position(), black_king->get_y_position())) {
+            move_piece(board, to_x, to_y, from_x, from_y);
             return false;
         }
     }
     
+    move_piece(board, to_x, to_y, from_x, from_y);
     return true;
 }
 

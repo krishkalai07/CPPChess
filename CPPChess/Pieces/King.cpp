@@ -102,6 +102,7 @@ bool King::vector_contains_point(std::vector<Point>& point_list, int x, int y) {
 }
 
 bool King::is_in_check () {
+    update_controlled_spaces();
     return vector_contains_point(control_squares, x_position, y_position);
 }
 
