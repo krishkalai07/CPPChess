@@ -37,3 +37,12 @@ void Piece::set_x_position(int x) {
 void Piece::set_y_position(int y) {
     this->y_position = y;
 }
+
+void Piece::set_board(std::vector<std::vector<Piece *> >& board) {
+//    for (int i = 0; i < 8; i++) {
+//        for (int j = 0; j < 8; j++) {
+//            this->board[i][j] = board[i][j];
+//        }
+//    }
+    this->board = board;
+}

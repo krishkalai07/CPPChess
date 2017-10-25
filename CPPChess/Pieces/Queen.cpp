@@ -21,8 +21,7 @@ void Queen::get_possible_move_list(std::vector<Point>& point_list) {
     
 }
 
-void Queen::get_controlled_squares(std::vector<Point>& point_list) {
-    return;
+void Queen::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
     bool stop_up_left = false;
     bool stop_up_right = false;
     bool stop_down_left = false;
@@ -31,7 +30,7 @@ void Queen::get_controlled_squares(std::vector<Point>& point_list) {
     bool stop_rightward = false;
     bool stop_downward = false;
     bool stop_leftward = false;
-    
+    return;
     for (int i = 1; !stop_up_left || !stop_up_right || !stop_down_left || !stop_down_right || !stop_upward || !stop_downward || !stop_leftward || !stop_rightward; i++) {
         //upward left
         if (x_position - i < 0 || y_position - i < 0) {
@@ -121,6 +120,10 @@ void Queen::get_controlled_squares(std::vector<Point>& point_list) {
             point_list.push_back(Point(x_position - i, y_position));
         }
     }
+}
+
+void Queen::get_controlled_squares(std::vector<Point>& point_list) {
+    get_controlled_squares(point_list, this->board);
 }
 
 bool Queen::validate_move(int to_x, int to_y) {

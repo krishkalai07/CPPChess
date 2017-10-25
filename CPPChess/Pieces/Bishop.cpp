@@ -20,7 +20,7 @@ void Bishop::get_possible_move_list(std::vector<Point>& point_list) {
     
 }
 
-void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
+void Bishop::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
     bool stop_up_left = false;
     bool stop_up_right = false;
     bool stop_down_left = false;
@@ -32,7 +32,7 @@ void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
             stop_up_left = true;
         }
         if (!stop_up_left) {
-            if (board[x_position - i][y_position - i] != NULL) {
+            if (temp_board[x_position - i][y_position - i] != NULL) {
                 stop_up_left = true;
             }
             point_list.push_back(Point(x_position - i, y_position - i));
@@ -43,7 +43,7 @@ void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
             stop_up_right = true;
         }
         if (!stop_up_right) {
-            if (board[x_position + i][y_position - i] != NULL) {
+            if (temp_board[x_position + i][y_position - i] != NULL) {
                 stop_up_right = true;
             }
             point_list.push_back(Point(x_position + i, y_position - i));
@@ -54,7 +54,7 @@ void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
             stop_down_left = true;
         }
         if (!stop_down_left) {
-            if (board[x_position - i][y_position + i] != NULL) {
+            if (temp_board[x_position - i][y_position + i] != NULL) {
                 stop_down_left = true;
             }
             point_list.push_back(Point(x_position - i, y_position + i));
@@ -65,12 +65,16 @@ void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
             stop_down_right = true;
         }
         if (!stop_down_right) {
-            if (board[x_position + i][y_position + i] != NULL) {
+            if (temp_board[x_position + i][y_position + i] != NULL) {
                 stop_down_right = true;
             }
             point_list.push_back(Point(x_position + i, y_position + i));
         }
     }
+}
+
+void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
+    get_controlled_squares(point_list, board);
 }
 
 bool Bishop::validate_move(int to_x, int to_y) {

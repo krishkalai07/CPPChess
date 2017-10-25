@@ -25,7 +25,7 @@ void King::get_possible_move_list(std::vector<Point>& point_list) {
     
 }
 
-void King::get_controlled_squares(std::vector<Point>& point_list) {
+void King::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
     return;
     for (int i = -1; i <= 1; i++) {
         for (int j = -1; j <= 1; j++) {
@@ -39,6 +39,10 @@ void King::get_controlled_squares(std::vector<Point>& point_list) {
             }
         }
     }
+}
+
+void King::get_controlled_squares(std::vector<Point>& point_list) {
+    get_controlled_squares(point_list, this->board);
 }
 
 bool King::vector_contains_point(std::vector<Point>& point_list, int x, int y) {

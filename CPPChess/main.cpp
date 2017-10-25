@@ -118,6 +118,7 @@ int main(int argc, const char * argv[]) {
         if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
             std::cout << "GIMME ANOTHER BREAKPOINT" << std::endl;
         }
+        std::cout << "True board&: " << &board << std::endl;
         if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
             std::cout << "Move puts king in check" << std::endl;
             std::cout << std::endl;
@@ -455,7 +456,7 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
     King *black_king = NULL;
     
     std::cout << "SIMULATION BEGINS" << std::endl;
-    
+    std::cout << "Board&: " << &board << std::endl;
     move_piece(board, from_x, from_y, to_x, to_y);
     
 //    std::cout << "SIMULATED BOARD BEGINS ---------------------------" << std::endl;
@@ -465,7 +466,7 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             if (board[i][j] != NULL) {
-                board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control);
+                board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control, board);
                 if (dynamic_cast<King *>(board[i][j]) != NULL) {
                     if (board[i][j]->isWhite()) {
                         white_king = dynamic_cast<King *>(board[i][j]);

@@ -25,7 +25,7 @@ void Rook::get_possible_move_list(std::vector<Point>& point_list) {
     
 }
 
-void Rook::get_controlled_squares(std::vector<Point>& point_list) {
+void Rook::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
     return;
     bool stop_upward = false;
     bool stop_rightward = false;
@@ -77,6 +77,10 @@ void Rook::get_controlled_squares(std::vector<Point>& point_list) {
             point_list.push_back(Point(x_position - i, y_position));
         }
     }
+}
+
+void Rook::get_controlled_squares(std::vector<Point>& point_list) {
+    get_controlled_squares(point_list, board);
 }
 
 bool Rook::validate_move(int to_x, int to_y) {

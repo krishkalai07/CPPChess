@@ -34,9 +34,11 @@ public:
     
     void set_x_position(int x_position);
     void set_y_position(int y_position);
+    void set_board(std::vector<std::vector<Piece *> >& board);
     
     virtual void get_possible_move_list(std::vector<Point>& point_list) = 0;
     virtual void get_controlled_squares(std::vector<Point>& point_list) = 0;
+    virtual void get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) = 0;
     virtual bool validate_move(int x, int y) = 0;
     virtual char get_abbreviation() = 0;
 };
