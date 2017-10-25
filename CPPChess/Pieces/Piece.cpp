@@ -11,13 +11,12 @@
 Piece::Piece (int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board): board(board) {
     this->x_position = x_position;
     this->y_position = y_position;
-    this->position = new Point(x_position, y_position);
     this->color = is_white;
     //this->board = board;
 }
 
 Piece::~Piece() {
-    delete position;
+    
 }
 
 int Piece::get_x_position() {

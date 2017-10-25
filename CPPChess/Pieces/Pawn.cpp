@@ -97,7 +97,7 @@ void Pawn::set_move_two_spaces (bool did_move) {
 bool Pawn::validate_move(int x, int y) {
     int direction = color ? -1 : 1;
     
-    if (position->x == x && position->y == y) {
+    if (x_position == x && y_position) {
         return false;
     }
     

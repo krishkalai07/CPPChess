@@ -17,7 +17,6 @@
 
 class Piece {
 protected:
-    Point *position;
     int x_position;
     int y_position;
     bool color;

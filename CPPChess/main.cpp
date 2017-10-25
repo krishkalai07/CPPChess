@@ -28,7 +28,11 @@ void print_board (std::vector<std::vector<Piece *> >& board);
 void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_y, int to_x, int to_y);
 bool is_valid_input (std::string input);
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y);
-std::string compress_board (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number);
+std::string compress_board (std::vector<std::vector<Piece *> >& board);
+std::string get_full_FEN (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number);
+std::string get_piece_placement (std::vector<std::vector<Piece *> >& board);
+std::string get_castling_rights (std::vector<std::vector<Piece *> >& board);
+std::string get_en_passant_rights (std::vector<std::vector<Piece *> >& board);
 std::string index_to_algebraic(int x, int y);
 int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::string current);
 
@@ -39,7 +43,7 @@ int main(int argc, const char * argv[]) {
     std::vector<Point> white_control;
     std::vector<Point> black_control;
     std::vector<std::string> FEN_values;
-    std::fstream fin("KasparovVVeselin.txt");
+    std::fstream fin("ThreeFoldRepetition.txt");
     std::string input;
     int halfmove_counter = 0;
     int move_number = 1;
@@ -59,10 +63,13 @@ int main(int argc, const char * argv[]) {
     }
     
     init_board(board, white_control, black_control);
-    //print_board(board);
+    print_board(board);
+    std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
+    FEN_values.push_back(compress_board(board));
+    std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
     std::cout << std::endl;
     
-    while (!fin.eof()) {
+    while (!draw) {
         fin >> input;
         //std::cin >> input;
         std::cout << input << std::endl;
@@ -78,6 +85,11 @@ int main(int argc, const char * argv[]) {
         Piece *viewing_piece = board[from_x][from_y];
         
         if (viewing_piece == NULL) {
+            std::cout << "Can't move a square" << std::endl;
+            continue;
+        }
+        if (viewing_piece->isWhite() != turn) {
+            std::cout << "Can't move that piece, wrong color" << std::endl;
             continue;
         }
         if (!viewing_piece->validate_move(to_x, to_y)) {
@@ -145,7 +157,12 @@ int main(int argc, const char * argv[]) {
             draw = true;
         }
         
-        std::cout << compress_board(board, turn, halfmove_counter, move_number) << std::endl;
+        std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
+        FEN_values.push_back(compress_board(board));
+        std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
+        if (number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) >= 3) {
+            draw = true;
+        }
         std::cout << std::endl;
     }
     
@@ -268,86 +285,27 @@ void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_
     board[from_x][from_y] = NULL;
 }
 
-std::string compress_board (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number) {
+std::string compress_board (std::vector<std::vector<Piece *> >& board) {
     std::string compression;
-    int empty_squares = 0;
-    bool en_passant_pawn_exists = false;
-    bool castle_true = false;
     
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        empty_squares = 0;
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            if (board[j][i] == NULL) {
-                empty_squares++;
-            }
-            else {
-                if (empty_squares != 0) {
-                    compression += '0'+empty_squares;
-                }
-                compression += board[j][i]->get_abbreviation();
-                empty_squares = 0;
-            }
-        }
-        
-        if (empty_squares != 0) {
-            compression += '0'+empty_squares;
-        }
+    compression += get_piece_placement(board);
+    compression += " ";
+    compression += get_castling_rights(board);
+    compression += " ";
+    compression += get_en_passant_rights(board);
     
-        if (i != 7) {
-            compression += '/';
-        }
-    }
-    
-    compression += turn ? " w " : " b ";
-    
-    if (board[4][7] != NULL && dynamic_cast<King *>(board[4][7]) != NULL && !dynamic_cast<King *>(board[4][7])->did_move()) {
-        if (board[7][7] != NULL && dynamic_cast<Rook *>(board[7][7]) != NULL && !dynamic_cast<Rook *>(board[7][7])->did_move()) {
-            compression += "K";
-            castle_true = true;
-        }
-        
-        if (board[0][7] != NULL && dynamic_cast<Rook *>(board[0][7]) != NULL && !dynamic_cast<Rook *>(board[0][7])->did_move()) {
-            compression += "Q";
-            castle_true = true;
-        }
-    }
-    
-    if (board[4][0] != NULL && dynamic_cast<King *>(board[4][0]) != NULL && !dynamic_cast<King *>(board[4][0])->did_move()) {
-        if (board[7][0] != NULL && dynamic_cast<Rook *>(board[7][0]) != NULL && !dynamic_cast<Rook *>(board[7][0])->did_move()) {
-            compression += "k";
-            castle_true = true;
-        }
-        
-        if (board[0][0] != NULL && dynamic_cast<Rook *>(board[0][0]) != NULL && !dynamic_cast<Rook *>(board[0][0])->did_move()) {
-            compression += "q";
-            castle_true = true;
-        }
-    }
-    
-    if (!castle_true) {
-        compression += '-';
-    }
-    
-    compression += ' ';
-    for (int i = 3; i <= 4; i++) {
-        for (int j = 0; j < 7; j++) {
-            if (board[j][i] != NULL) {
-                if (dynamic_cast<Pawn *>(board[j][i]) != NULL) {
-                    if(dynamic_cast<Pawn *>(board[j][i])->did_move_two_spaces_last_move()) {
-                        int direction = board[j][i]->isWhite() ? 1 : -1;
-                        compression += index_to_algebraic(j, i + direction);
-                        en_passant_pawn_exists = true;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    
-    if (!en_passant_pawn_exists) {
-        compression += '-';
-    }
+    return compression;
+}
 
+std::string get_full_FEN (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number) {
+    std::string compression;
+
+    compression += get_piece_placement(board);
+    compression += turn ? " w " : " b ";
+    compression += get_castling_rights(board);
+    compression += ' ';
+    compression += get_en_passant_rights(board);
+    
     compression += " " + std::to_string(halfmove_counter);
     compression += " " + std::to_string(move_number);
     
@@ -371,4 +329,89 @@ int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::stri
         }
     }
     return count;
+}
+
+std::string get_piece_placement (std::vector<std::vector<Piece *> >& board) {
+    std::string board_compression;
+    int empty_squares = 0;
+    
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        empty_squares = 0;
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            if (board[j][i] == NULL) {
+                empty_squares++;
+            }
+            else {
+                if (empty_squares != 0) {
+                    board_compression += std::to_string(empty_squares);
+                }
+                board_compression += board[j][i]->get_abbreviation();
+                empty_squares = 0;
+            }
+        }
+        
+        if (empty_squares != 0) {
+            board_compression += std::to_string(empty_squares);
+        }
+        
+        if (i != 7) {
+            board_compression += '/';
+        }
+    }
+    
+    return board_compression;
+}
+
+std::string get_castling_rights (std::vector<std::vector<Piece *> >& board) {
+    std::string castling_rights;
+    
+    if (board[4][7] != NULL && dynamic_cast<King *>(board[4][7]) != NULL && !dynamic_cast<King *>(board[4][7])->did_move()) {
+        if (board[7][7] != NULL && dynamic_cast<Rook *>(board[7][7]) != NULL && !dynamic_cast<Rook *>(board[7][7])->did_move()) {
+            castling_rights += "K";
+        }
+        
+        if (board[0][7] != NULL && dynamic_cast<Rook *>(board[0][7]) != NULL && !dynamic_cast<Rook *>(board[0][7])->did_move()) {
+            castling_rights += "Q";
+        }
+    }
+    
+    if (board[4][0] != NULL && dynamic_cast<King *>(board[4][0]) != NULL && !dynamic_cast<King *>(board[4][0])->did_move()) {
+        if (board[7][0] != NULL && dynamic_cast<Rook *>(board[7][0]) != NULL && !dynamic_cast<Rook *>(board[7][0])->did_move()) {
+            castling_rights += "k";
+        }
+        
+        if (board[0][0] != NULL && dynamic_cast<Rook *>(board[0][0]) != NULL && !dynamic_cast<Rook *>(board[0][0])->did_move()) {
+            castling_rights += "q";
+        }
+    }
+    
+    if (castling_rights.size() == 0) {
+        castling_rights += "-";
+    }
+    
+    return castling_rights;
+}
+
+std::string get_en_passant_rights (std::vector<std::vector<Piece *> >& board) {
+    std::string en_passant_destination;
+    
+    for (int i = 3; i <= 4; i++) {
+        for (int j = 0; j < 7; j++) {
+            if (board[j][i] != NULL) {
+                if (dynamic_cast<Pawn *>(board[j][i]) != NULL) {
+                    if(dynamic_cast<Pawn *>(board[j][i])->did_move_two_spaces_last_move()) {
+                        int direction = board[j][i]->isWhite() ? 1 : -1;
+                        en_passant_destination += index_to_algebraic(j, i + direction);
+                        return en_passant_destination;
+                    }
+                }
+            }
+        }
+    }
+    
+    if (en_passant_destination.size() == 0) {
+        en_passant_destination += '-';
+    }
+    
+    return en_passant_destination;
 }
