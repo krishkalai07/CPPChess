@@ -22,11 +22,47 @@ bool Rook::did_move() {
 }
 
 void Rook::get_possible_move_list(std::vector<Point>& point_list) {
+    // Up
+    for (int i = 1; y_position - i >= 0; i++) {
+        if (board[x_position][y_position-i] == NULL) {
+            point_list.push_back(Point(x_position, y_position - i));
+        }
+        else {
+            if (board[x_position][y_position - i]->isWhite() != this->color) {
+                point_list.push_back(Point(x_position, y_position - i));
+            }
+            break;
+        }
+    }
     
+    // Right
+    for (int i = 1; x_position + i < 8; i++) {
+        if (board[x_position+i][y_position] == NULL) {
+            point_list.push_back(Point(x_position+i, y_position));
+        }
+        else {
+            if (board[x_position+i][y_position]->isWhite() != this->color) {
+                point_list.push_back(Point(x_position + i, y_position));
+            }
+            break;
+        }
+    }
+    
+    // Down
+    for (int i = 1; y_position + i < 8; i++) {
+        if (board[x_position][y_position+i] == NULL) {
+            point_list.push_back(Point(x_position, y_position + i));
+        }
+        else {
+            if (board[x_position][y_position + i]->isWhite() != this->color) {
+                point_list.push_back(Point(x_position, y_position + i));
+            }
+            break;
+        }
+    }
 }
 
 void Rook::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
-    return;
     bool stop_upward = false;
     bool stop_rightward = false;
     bool stop_downward = false;

@@ -17,11 +17,22 @@ Knight::~Knight() {
 }
 
 void Knight::get_possible_move_list(std::vector<Point>& point_list) {
-    
+    for (int i = -2; i <= 2; i++) {
+        for (int j = -2; j <= 2; j++) {
+            if (i == 0 || j == 0 || i == j || i == -j || -i == j) {
+                continue;
+            }
+            
+            if (x_position + i >= 0 && x_position + i < 8 && y_position + j >= 0 && y_position + j < 8) {
+                if (board[x_position + i][y_position + j] == NULL || this->color != board[x_position + i][y_position + j]->isWhite()) {
+                    point_list.push_back(Point(x_position + i, y_position + j));
+                }
+            }
+        }
+    }
 }
 
 void Knight::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
-    return;
     for (int i = -2; i <= 2; i++) {
         for (int j = -2; j <= 2; j++) {
             if (i == 0 || j == 0 || i == j || i == -j || -i == j) {

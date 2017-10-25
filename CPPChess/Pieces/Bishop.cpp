@@ -17,7 +17,57 @@ Bishop::~Bishop() {
 }
 
 void Bishop::get_possible_move_list(std::vector<Point>& point_list) {
+    // All left up
+    for (int i = 1; x_position - i >= 0 && y_position - i >= 0; i++) {
+        if (board[x_position-i][y_position-i] == NULL) {
+            point_list.push_back(Point(x_position-i, y_position-i));
+        }
+        else {
+            if (board[x_position-i][y_position-i]->isWhite() != this->color) {
+                point_list.push_back(Point(x_position - i, y_position - i));
+            }
+            break;
+        }
+    }
     
+    // All left down
+    for (int i = 1; x_position- i >= 0 && y_position + i < 8; i++) {
+        if (board[x_position - i][y_position + i] == NULL) {
+            point_list.push_back(Point(x_position - i, y_position + i));
+        }
+        else {
+            if (board[x_position - i][y_position + i]->isWhite() != this->color) {
+                point_list.push_back(Point(x_position - i, y_position + i));
+            }
+            break;
+        }
+    }
+    
+    // All right down
+    for (int i = 1; x_position + i < 8 && y_position + i < 8; i++) {
+        if (board[x_position + i][y_position + i] == NULL) {
+            point_list.push_back(Point(x_position + i, y_position + i));
+        }
+        else {
+            if (board[x_position + i][y_position + i]->isWhite() != this->color) {
+                point_list.push_back(Point(x_position + i, y_position + i));
+            }
+            break;
+        }
+    }
+    
+    // All right up
+    for (int i = 1; x_position + i < 8 && y_position - i >= 0; i++) {
+        if (board[x_position+ i][y_position - i] == NULL) {
+            point_list.push_back(Point(x_position + i, y_position - i));
+        }
+        else {
+            if (board[x_position + i][y_position - i]->isWhite() != this->color) {
+                point_list.push_back(Point(x_position + i, y_position - i));
+            }
+            break;
+        }
+    }
 }
 
 void Bishop::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
