@@ -69,6 +69,28 @@ int main(int argc, const char * argv[]) {
     std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
     std::cout << std::endl;
     
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            if (board[i][j] != NULL) {
+                if (board[i][j]->isWhite()) {
+                    board[i][j]->get_controlled_squares(white_control);
+                }
+                else {
+                    board[i][j]->get_controlled_squares(black_control);
+                }
+            }
+        }
+    }
+    
+    for (int i = 0; i < white_control.size(); i++) {
+        std::cout << white_control[i] << " ";
+    }
+    std::cout << std::endl;
+    for (int i = 0; i < black_control.size(); i++) {
+        std::cout << black_control[i] << " ";
+    }
+    std::cout << std::endl;
+    
     while (!draw) {
         fin >> input;
         //std::cin >> input;
@@ -78,9 +100,6 @@ int main(int argc, const char * argv[]) {
         }
     
         convert_input(input, from_x, from_y, to_x, to_y);
-        
-//        std::cout << "From: " << from_x << " " << from_y << std::endl;
-//        std::cout << "To: " << to_x << " " << to_y << std::endl;
         
         Piece *viewing_piece = board[from_x][from_y];
         

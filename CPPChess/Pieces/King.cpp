@@ -26,7 +26,18 @@ void King::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void King::get_controlled_squares(std::vector<Point>& point_list) {
-    
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            // Prevent checking the square it's on.
+            if (i == 0 && j == 0) {
+                continue;
+            }
+            
+            if (x_position+i >= 0 && x_position+i < 8 && y_position+j >= 0 && y_position+j < 8) {
+                point_list.push_back(Point(x_position+i,y_position+j));
+            }
+        }
+    }
 }
 
 bool King::vector_contains_point(std::vector<Point>& point_list, int x, int y) {
@@ -39,7 +50,7 @@ bool King::vector_contains_point(std::vector<Point>& point_list, int x, int y) {
 }
 
 bool King::is_in_check () {
-    return vector_contains_point(control_squares, position->x, position->y);
+    return vector_contains_point(control_squares, x_position, y_position);
 }
 
 bool King::validate_move(int x, int y) {

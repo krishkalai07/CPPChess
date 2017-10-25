@@ -26,7 +26,15 @@ void Pawn::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void Pawn::get_controlled_squares(std::vector<Point>& point_list) {
+    int movement_direction = color ? -1 : 1;
     
+    if (x_position != 0) {
+        point_list.push_back(Point(x_position - 1, y_position + movement_direction));
+    }
+    
+    if (x_position != 7) {
+        point_list.push_back(Point(x_position + 1, y_position + movement_direction));
+    }
 }
 
 void Pawn::get_forward_moves(std::vector<Point>& point_list) {

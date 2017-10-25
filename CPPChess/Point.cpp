@@ -13,11 +13,6 @@ Point::Point(int x, int y) {
     this->y = y;
 }
 
-//Point::Point(Point &point) {
-//    this->x = point.x;
-//    this->y = point.y;
-//}
-
 Point::~Point(){
     
 }
