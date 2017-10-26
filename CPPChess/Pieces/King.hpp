@@ -30,6 +30,7 @@ public:
     virtual ~King();
     
     bool did_move();
+    void set_did_move(bool has_moved);
     
     void get_possible_move_list (std::vector<Point>& point_list);
     void get_controlled_squares (std::vector<Point>& point_list);

@@ -44,7 +44,7 @@ int main(int argc, const char * argv[]) {
     std::vector<Point> white_control;
     std::vector<Point> black_control;
     std::vector<std::string> FEN_values;
-    std::fstream fin("TheImmortalGame.txt");
+    std::fstream fin("ScholarsMateVariation.txt");
     std::string input;
     int halfmove_counter = 0;
     int move_number = 1;
@@ -153,6 +153,7 @@ int main(int argc, const char * argv[]) {
                 // Castle Queenside
                 move_piece(board, 0, rank, 3, rank);
             }
+            dynamic_cast<King *>(viewing_piece)->set_did_move(true);
         }
         else if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
             Pawn *my_pawn = dynamic_cast<Pawn *>(viewing_piece);
@@ -291,33 +292,10 @@ void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& 
 }
 
 void print_board (std::vector<std::vector<Piece *> >& board) {
-    Piece *casted_value = NULL;
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
-            Piece *temp = board[j][i];
-            if (dynamic_cast<Pawn *>(temp) != NULL) {
-                casted_value = dynamic_cast<Pawn *>(temp);
-                std::cout << (casted_value->isWhite() ? "P" : "p");
-            }
-            else if (dynamic_cast<Knight *>(temp) != NULL) {
-                casted_value = dynamic_cast<Knight *>(temp);
-                std::cout << (casted_value->isWhite() ? "N" : "n");
-            }
-            else if (dynamic_cast<Bishop *>(temp) != NULL) {
-                casted_value = dynamic_cast<Bishop *>(temp);
-                std::cout << (casted_value->isWhite() ? "B" : "b");
-            }
-            else if (dynamic_cast<Rook *>(temp) != NULL) {
-                casted_value = dynamic_cast<Rook *>(temp);
-                std::cout << (casted_value->isWhite() ? "R" : "r");
-            }
-            else if (dynamic_cast<Queen *>(temp) != NULL) {
-                casted_value = dynamic_cast<Queen *>(temp);
-                std::cout << (casted_value->isWhite() ? "Q" : "q");
-            }
-            else if (dynamic_cast<King *>(temp) != NULL) {
-                casted_value = dynamic_cast<King *>(temp);
-                std::cout << (casted_value->isWhite() ? "K" : "k");
+            if (board[j][i] != NULL) {
+                std::cout << board[j][i]->get_abbreviation();
             }
             else {
                 std::cout << " ";
@@ -326,6 +304,43 @@ void print_board (std::vector<std::vector<Piece *> >& board) {
         std::cout << std::endl;
     }
 }
+
+//void print_board (std::vector<std::vector<Piece *> >& board) {
+//    Piece *casted_value = NULL;
+//    for (int i = 0; i < BOARD_SIZE; i++) {
+//        for (int j = 0; j < BOARD_SIZE; j++) {
+//            Piece *temp = board[j][i];
+//            if (dynamic_cast<Pawn *>(temp) != NULL) {
+//                casted_value = dynamic_cast<Pawn *>(temp);
+//                std::cout << (casted_value->isWhite() ? "P" : "p");
+//            }
+//            else if (dynamic_cast<Knight *>(temp) != NULL) {
+//                casted_value = dynamic_cast<Knight *>(temp);
+//                std::cout << (casted_value->isWhite() ? "N" : "n");
+//            }
+//            else if (dynamic_cast<Bishop *>(temp) != NULL) {
+//                casted_value = dynamic_cast<Bishop *>(temp);
+//                std::cout << (casted_value->isWhite() ? "B" : "b");
+//            }
+//            else if (dynamic_cast<Rook *>(temp) != NULL) {
+//                casted_value = dynamic_cast<Rook *>(temp);
+//                std::cout << (casted_value->isWhite() ? "R" : "r");
+//            }
+//            else if (dynamic_cast<Queen *>(temp) != NULL) {
+//                casted_value = dynamic_cast<Queen *>(temp);
+//                std::cout << (casted_value->isWhite() ? "Q" : "q");
+//            }
+//            else if (dynamic_cast<King *>(temp) != NULL) {
+//                casted_value = dynamic_cast<King *>(temp);
+//                std::cout << (casted_value->isWhite() ? "K" : "k");
+//            }
+//            else {
+//                std::cout << " ";
+//            }
+//        }
+//        std::cout << std::endl;
+//    }
+//}
 
 bool is_valid_input(std::string input) {
     if (INPUT_NOTATION == 0) {

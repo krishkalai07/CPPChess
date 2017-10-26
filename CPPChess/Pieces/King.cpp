@@ -21,6 +21,10 @@ bool King::did_move() {
     return has_moved;
 }
 
+void King::set_did_move(bool has_moved) {
+    this->has_moved = has_moved;
+}
+
 void King::get_possible_move_list(std::vector<Point>& point_list) {
     for (int i = -1; i <= 1; i++) {
         for (int j = -1; j <= 1; j++) {
