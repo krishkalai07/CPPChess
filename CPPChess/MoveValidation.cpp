@@ -11,8 +11,7 @@
 #pragma mark - old methods
 bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int from_y, int to_x, int to_y, bool turn) {
     std::vector<Point> controlled_squares;
-    King *white_king = NULL;
-    King *black_king = NULL;
+    King *king = NULL;
     
     move_piece(board, from_x, from_y, to_x, to_y);
     
@@ -21,30 +20,18 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
             if (board[i][j] != NULL) {
                 if (board[i][j]->isWhite() != turn) {
                     board[i][j]->get_controlled_squares(controlled_squares, board);
-                }
-                if (dynamic_cast<King *>(board[i][j]) != NULL) {
-                    if (board[i][j]->isWhite()) {
-                        white_king = dynamic_cast<King *>(board[i][j]);
-                    }
-                    else {
-                        black_king = dynamic_cast<King *>(board[i][j]);
+                    
+                    if (dynamic_cast<King *>(board[i][j]) != NULL) {
+                        king = dynamic_cast<King *>(board[i][j]);
                     }
                 }
             }
         }
     }
     
-    if (turn) {
-        if (vector_contains_point(controlled_squares, white_king->get_x_position(), white_king->get_y_position())) {
-            move_piece(board, to_x, to_y, from_x, from_y);
-            return false;
-        }
-    }
-    else {
-        if (vector_contains_point(controlled_squares, black_king->get_x_position(), black_king->get_y_position())) {
-            move_piece(board, to_x, to_y, from_x, from_y);
-            return false;
-        }
+    if (vector_contains_point(controlled_squares, king->get_x_position(), king->get_y_position())) {
+        move_piece(board, to_x, to_y, from_x, from_y);
+        return false;
     }
     
     move_piece(board, to_x, to_y, from_x, from_y);
@@ -196,5 +183,3 @@ int get_relative_location (std::vector<std::vector<Piece *> >& board, int from_x
         return 1;
     }
 }
-
-
