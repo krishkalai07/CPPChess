@@ -1,6 +1,6 @@
 # CPPChess
 
-Chess written using C++. This is a way for my to program my theoretical ideas before converting to Java.
+Chess written using C++. This is a way for me to program my theoretical ideas before converting to Java.
 
 To compile yourself, compile main.cpp with the follwing commands.
 
