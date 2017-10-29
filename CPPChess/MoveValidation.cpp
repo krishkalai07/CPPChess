@@ -10,8 +10,7 @@
 
 #pragma mark - old methods
 bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int from_y, int to_x, int to_y, bool turn) {
-    std::vector<Point> white_control;
-    std::vector<Point> black_control;
+    std::vector<Point> controlled_squares;
     King *white_king = NULL;
     King *black_king = NULL;
     
@@ -20,7 +19,9 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             if (board[i][j] != NULL) {
-                board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control, board);
+                if (board[i][j]->isWhite() != turn) {
+                    board[i][j]->get_controlled_squares(controlled_squares, board);
+                }
                 if (dynamic_cast<King *>(board[i][j]) != NULL) {
                     if (board[i][j]->isWhite()) {
                         white_king = dynamic_cast<King *>(board[i][j]);
@@ -34,13 +35,13 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
     }
     
     if (turn) {
-        if (vector_contains_point(black_control, white_king->get_x_position(), white_king->get_y_position())) {
+        if (vector_contains_point(controlled_squares, white_king->get_x_position(), white_king->get_y_position())) {
             move_piece(board, to_x, to_y, from_x, from_y);
             return false;
         }
     }
     else {
-        if (vector_contains_point(white_control, black_king->get_x_position(), black_king->get_y_position())) {
+        if (vector_contains_point(controlled_squares, black_king->get_x_position(), black_king->get_y_position())) {
             move_piece(board, to_x, to_y, from_x, from_y);
             return false;
         }
@@ -66,6 +67,7 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
     if (dynamic_cast<King *>(board[from_x][from_y]) == NULL) {
         int direction = get_relative_location(board, from_x, from_y, king);
         if (direction == 1) {
+            move_piece(board, to_x, to_y, from_x, from_y);
             return true;
         }
         
@@ -87,6 +89,7 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
             }
 
             if (tmp_x < 0 || tmp_x >= 8 || tmp_y < 0 || tmp_y >= 8) {
+                move_piece(board, to_x, to_y, from_x, from_y);
                 return true;
             }
             
@@ -94,26 +97,42 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
                 if (direction == 2 || direction == 3 || direction == 5 || direction == 7) {
                     if (board[tmp_x][tmp_y]->isWhite() != king->isWhite()) {
                         if (dynamic_cast<Rook *>(board[tmp_x][tmp_y]) != NULL || dynamic_cast<Queen *>(board[tmp_x][tmp_y]) != NULL) {
-                            return board[tmp_x][tmp_y]->isWhite() == king->isWhite();
+                            move_piece(board, to_x, to_y, from_x, from_y);
+                            if (tmp_x == to_x && tmp_y == to_y) {
+                                return board[from_x][from_y]->isWhite() == king->isWhite();
+                            }
+                            else {
+                                return board[tmp_y][tmp_y]->isWhite() == king->isWhite();
+                            }
                         }
                         else {
+                            move_piece(board, to_x, to_y, from_x, from_y);
                             return true;
                         }
                     }
                     else {
+                        move_piece(board, to_x, to_y, from_x, from_y);
                         return true;
                     }
                 }
                 else if (direction == 10 || direction == 14 || direction == 25 || direction == 21) {
                     if (board[tmp_x][tmp_y]->isWhite() != king->isWhite()) {
                         if (dynamic_cast<Bishop *>(board[tmp_x][tmp_y]) != NULL || dynamic_cast<Queen *>(board[tmp_x][tmp_y]) != NULL) {
-                            return board[tmp_x][tmp_y]->isWhite() == king->isWhite();
+                            move_piece(board, to_x, to_y, from_x, from_y);
+                            if (tmp_x == to_x && tmp_y == to_y) {
+                                return board[from_x][from_y]->isWhite() == king->isWhite();
+                            }
+                            else {
+                                return board[tmp_y][tmp_y]->isWhite() == king->isWhite();
+                            }
                         }
                         else {
+                            move_piece(board, to_x, to_y, from_x, from_y);
                             return true;
                         }
                     }
                     else {
+                        move_piece(board, to_x, to_y, from_x, from_y);
                         return true;
                     }
                 }
@@ -121,8 +140,10 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
         } while (tmp_x >= 0 && tmp_x < 8 && tmp_y >= 0 && tmp_y < 8);
     }
     else {
+        move_piece(board, to_x, to_y, from_x, from_y);
         return simulate_move(board, from_x, from_y, to_x, to_y, king->isWhite());
     }
+    move_piece(board, to_x, to_y, from_x, from_y);
     return true;
 }
 

@@ -9,13 +9,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CPPChess/main.cpp"
-            timestampString = "530941153.543205"
+            filePath = "CPPChess/MoveValidation.cpp"
+            timestampString = "530951189.371396"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
-            landmarkName = "main(int argc, const char * argv[])"
+            startingLineNumber = "13"
+            endingLineNumber = "13"
+            landmarkName = "simulate_move(std::vector&lt;std::vector&lt;Piece *&gt; &gt; board, int from_x, int from_y, int to_x, int to_y, bool turn)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>

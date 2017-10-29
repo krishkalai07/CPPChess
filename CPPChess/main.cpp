@@ -109,17 +109,26 @@ int main(int argc, const char * argv[]) {
             std::cout << std::endl;
             continue;
         }
-        //if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
-        if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
-            std::cout << "";
-        }
 //        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
-        if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
-            std::cout << "Move puts your king in check" << std::endl;
-            std::cout << std::endl;
-            continue;
+//        if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
+//            std::cout << "";
+//        }
+//        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+        if (white_king->is_in_check() || black_king->is_in_check()) {
+            if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+                std::cout << "Move puts your king in check" << std::endl;
+                std::cout << std::endl;
+                continue;
+            }
         }
-        
+        else {
+            if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
+                std::cout << "Move puts your king in check" << std::endl;
+                std::cout << std::endl;
+                continue;
+            }
+        }
+    
         if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
             Pawn *my_pawn = dynamic_cast<Pawn *>(viewing_piece);
             if (from_x != to_x) {
@@ -190,6 +199,7 @@ int main(int argc, const char * argv[]) {
             }
         }
         
+        bool should_exit = false;
         int count = 0;
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
@@ -201,18 +211,34 @@ int main(int argc, const char * argv[]) {
                         int t_from_x = board[i][j]->get_x_position();
                         int t_from_y = board[i][j]->get_y_position();
                         
-                        for (int i = 0 ; i < possible_moves.size(); i++) {
-                            if (!simulate_move(board, t_from_x, t_from_y, possible_moves[i].x, possible_moves[i].y, turn)) {
-//                            if (!is_legal_move(board, t_from_x, t_from_y, possible_moves[i].x, possible_moves[i].y, turn ? white_king : black_king)) {
-                                possible_moves.erase(possible_moves.begin() + i);
-                                i--;
+                        for (int k = 0; k < possible_moves.size();) {
+                            if (king->is_in_check()) {
+                                if (!simulate_move(board, t_from_x, t_from_y, possible_moves[k].x, possible_moves[k].y, turn)) {
+                                    possible_moves.erase(possible_moves.begin() + k);
+                                    continue;
+                                }
                             }
+                            else {
+                                if (!is_legal_move(board, t_from_x, t_from_y, possible_moves[k].x, possible_moves[k].y, turn ? black_king : white_king)) {
+                                    possible_moves.erase(possible_moves.begin() + k);
+                                    continue;
+                                }
+                            }
+                            k++;
                         }
                         count += possible_moves.size();
+                        if (count > 0) {
+                            should_exit = true;
+                        }
                     }
                 }
             }
+            if (should_exit) {
+                break;
+            }
         }
+        
+        std::cout << count << std::endl;
         
         if (count == 0) {
             if (king->is_in_check()) {
