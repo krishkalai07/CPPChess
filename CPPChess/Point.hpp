@@ -17,12 +17,11 @@ public:
     int x;
     int y;
     
-    Point (int,int);
-//    Point (Point&);
+    Point (int x,int y);
     ~Point();
     
     bool operator==(Point &point);
-    friend std::ostream& operator<<(std::ostream&, Point&);
+    friend std::ostream& operator<<(std::ostream& os, Point& point);
 };
 
 #endif /* Point_hpp */

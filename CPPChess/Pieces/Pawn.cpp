@@ -37,10 +37,6 @@ void Pawn::get_controlled_squares(std::vector<Point>& point_list, std::vector<st
     }
 }
 
-void Pawn::get_controlled_squares(std::vector<Point>& point_list) {
-    get_controlled_squares(point_list, board);
-}
-
 void Pawn::get_forward_moves(std::vector<Point>& point_list) {
     int movement_direction = color ? -1 : 1;
     

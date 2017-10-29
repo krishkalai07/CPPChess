@@ -123,10 +123,6 @@ void Bishop::get_controlled_squares(std::vector<Point>& point_list, std::vector<
     }
 }
 
-void Bishop::get_controlled_squares(std::vector<Point>& point_list) {
-    get_controlled_squares(point_list, board);
-}
-
 bool Bishop::validate_move(int to_x, int to_y) {
     int delta_x = 0;
     int delta_y = 0;

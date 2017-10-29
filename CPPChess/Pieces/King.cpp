@@ -92,10 +92,6 @@ void King::get_controlled_squares(std::vector<Point>& point_list, std::vector<st
     }
 }
 
-void King::get_controlled_squares(std::vector<Point>& point_list) {
-    get_controlled_squares(point_list, this->board);
-}
-
 bool King::vector_contains_point(std::vector<Point>& point_list, int x, int y) {
     for (int i = 0; i < point_list.size(); i++) {
         if (x == point_list[i].x && y == point_list[i].y) {

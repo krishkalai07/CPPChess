@@ -12,7 +12,6 @@ Piece::Piece (int x_position, int y_position, bool is_white, std::vector<std::ve
     this->x_position = x_position;
     this->y_position = y_position;
     this->color = is_white;
-    //this->board = board;
 }
 
 Piece::~Piece() {
@@ -36,4 +35,8 @@ void Piece::set_x_position(int x) {
 
 void Piece::set_y_position(int y) {
     this->y_position = y;
+}
+
+void Piece::get_controlled_squares(std::vector<Point>& point_list) {
+    get_controlled_squares(point_list, board);
 }

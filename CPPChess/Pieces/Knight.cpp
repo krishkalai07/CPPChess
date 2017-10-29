@@ -46,10 +46,6 @@ void Knight::get_controlled_squares(std::vector<Point>& point_list, std::vector<
     }
 }
 
-void Knight::get_controlled_squares(std::vector<Point>& point_list) {
-    get_controlled_squares(point_list, this->board);
-}
-
 bool Knight::validate_move(int x, int y) {
     if (x_position == x && y_position == y) {
         return false;
