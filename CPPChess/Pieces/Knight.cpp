@@ -8,7 +8,7 @@
 
 #include "Knight.hpp"
 
-Knight::Knight(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board):Piece(x_position, y_position, is_white, board) {
+Knight::Knight(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board):Piece(x_position, y_position, is_white, 3, board) {
     
 }
 

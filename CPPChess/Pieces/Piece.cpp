@@ -8,10 +8,11 @@
 
 #include "Piece.hpp"
 
-Piece::Piece (int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board): board(board) {
+Piece::Piece (int x_position, int y_position, bool is_white, int material_value, std::vector<std::vector<Piece *> >& board): board(board) {
     this->x_position = x_position;
     this->y_position = y_position;
     this->color = is_white;
+    this->material_value = material_value;
 }
 
 Piece::~Piece() {
@@ -23,6 +24,10 @@ int Piece::get_x_position() {
 }
 int Piece::get_y_position() {
     return y_position;
+}
+
+int Piece::get_material_value() {
+    return material_value;
 }
 
 bool Piece::isWhite() {

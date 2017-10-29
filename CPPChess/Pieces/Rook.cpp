@@ -9,7 +9,7 @@
 #include "Rook.hpp"
 #define ABS(i) (i < 0 ? -i : i)
 
-Rook::Rook(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board):Piece(x_position, y_position, is_white, board) {
+Rook::Rook(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board):Piece(x_position, y_position, is_white, 5, board) {
     has_moved = false;
 }
 

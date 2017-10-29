@@ -8,7 +8,7 @@
 
 #include "King.hpp"
 
-King::King(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board, std::vector<Point>& control_squares):Piece(x_position, y_position, is_white, board) {
+King::King(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board, std::vector<Point>& control_squares):Piece(x_position, y_position, is_white, 0, board) {
     this->control_squares = control_squares;
     this->has_moved = false;
 }

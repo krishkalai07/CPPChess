@@ -8,7 +8,7 @@
 
 #include "Pawn.hpp"
 
-Pawn::Pawn(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board): Piece(x_position, y_position, is_white, board) {
+Pawn::Pawn(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board): Piece(x_position, y_position, is_white, 1, board) {
     moved_two_spaces_last_move = false;
 }
 

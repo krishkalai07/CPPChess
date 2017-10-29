@@ -23,6 +23,8 @@
 #include "BoardCompression.hpp"
 #include "MoveValidation.hpp"
 
+#include "Evaluate.hpp"
+
 void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& white_control, std::vector<Point>& black_control, King *&white_king, King *&black_king);
 void print_board (std::vector<std::vector<Piece *> >& board);
 bool is_valid_input (std::string input);
@@ -191,6 +193,8 @@ int main(int argc, const char * argv[]) {
                 }
             }
         }
+        
+        std::cout << "Material advantage of current position: " << get_material_advantage(board) << std::endl;
         
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 3; j <= 4; j++) {

@@ -18,16 +18,18 @@ class Piece {
 protected:
     int x_position;
     int y_position;
+    int material_value;
     bool color;
     std::vector<std::vector<Piece *> >& board;
 
 public:
-    Piece (int x_position, int y_poisition, bool is_white, std::vector<std::vector<Piece *> >& board);
-    //Piece (Piece& piece);
+    Piece (int x_position, int y_poisition, bool is_white, int material_value, std::vector<std::vector<Piece *> >& board);
+    
     virtual ~Piece();
     
     int get_x_position();
     int get_y_position();
+    int get_material_value();
     bool isWhite();
     
     void set_x_position(int x_position);
