@@ -9,7 +9,6 @@
 #ifndef Bishop_hpp
 #define Bishop_hpp
 
-#include <stdio.h>
 #include "Piece.hpp"
 #include "Attack.hpp"
 

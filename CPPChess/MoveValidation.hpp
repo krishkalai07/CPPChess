@@ -9,7 +9,6 @@
 #ifndef MoveValidation_hpp
 #define MoveValidation_hpp
 
-#include <vector>
 #include "Piece.hpp"
 #include "King.hpp"
 #include "Rook.hpp"

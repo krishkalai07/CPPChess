@@ -10,7 +10,9 @@
 #define BoardCompression_hpp
 
 #include "Piece.hpp"
-#include <vector>
+#include "King.hpp"
+#include "Rook.hpp"
+#include "Pawn.hpp"
 
 const int BOARD_SIZE = 8;
 

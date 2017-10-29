@@ -7,7 +7,6 @@
 //
 
 #include "Queen.hpp"
-#define ABS(i) (i < 0 ? -i : i)
 
 Queen::Queen(int x_position, int y_position, bool is_white, std::vector<std::vector<Piece *> >& board):Piece(x_position, y_position, is_white, board) {
     

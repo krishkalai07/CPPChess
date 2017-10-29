@@ -7,9 +7,6 @@
 //
 
 #include "BoardCompression.hpp"
-#include "Rook.hpp"
-#include "King.hpp"
-#include "Pawn.hpp"
 
 std::string compress_board (std::vector<std::vector<Piece *> >& board) {
     std::string compression;

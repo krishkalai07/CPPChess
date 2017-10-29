@@ -9,7 +9,6 @@
 #ifndef Piece_hpp
 #define Piece_hpp
 
-#include <stdio.h>
 #include <iostream>
 #include <vector>
 

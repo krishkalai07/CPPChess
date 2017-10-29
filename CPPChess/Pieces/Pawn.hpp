@@ -9,7 +9,6 @@
 #ifndef Pawn_hpp
 #define Pawn_hpp
 
-#include <stdio.h>
 #include "Piece.hpp"
 
 class Pawn : public Piece {

@@ -9,9 +9,7 @@
 #ifndef Knight_hpp
 #define Knight_hpp
 
-#include <stdio.h>
 #include "Piece.hpp"
-#define ABS(i) (i < 0 ? -i : i)
 
 class Knight: public Piece {
 public:

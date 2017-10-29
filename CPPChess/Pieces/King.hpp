@@ -9,7 +9,6 @@
 #ifndef King_hpp
 #define King_hpp
 
-#include <stdio.h>
 #include "Rook.hpp"
 #include "Piece.hpp"
 
