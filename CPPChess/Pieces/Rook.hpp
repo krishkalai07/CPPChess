@@ -9,7 +9,8 @@
 #ifndef Rook_hpp
 #define Rook_hpp
 
-#include <stdio.h>
+#include <vector>
+#include "Attack.hpp"
 #include "Piece.hpp"
 
 class Rook: public Piece {

@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "Piece.hpp"
+#include "Attack.hpp"
 
 class Bishop: public Piece {
 public:

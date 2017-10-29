@@ -33,7 +33,7 @@ bool vector_contains_point(std::vector<Point>& point_list, int x, int y);
 
 int main(int argc, const char * argv[]) {
     std::vector<std::vector<Piece *> > board;
-    std::vector<Piece *> file;
+    //std::vector<Piece *> file;
     std::vector<Point> possible_moves;
     std::vector<Point> white_control;
     std::vector<Point> black_control;
@@ -54,19 +54,17 @@ int main(int argc, const char * argv[]) {
     bool game_ended = false;
     
     for (int i = 0; i < BOARD_SIZE; i++) {
-        board.push_back(file);
+        board.push_back(std::vector<Piece *>());
         for (int j = 0; j < BOARD_SIZE; j++) {
             board[i].push_back(NULL);
         }
     }
-    
     init_board(board, white_control, black_control, white_king, black_king);
     
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    
     print_board(board);
-//    std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
     FEN_values.push_back(compress_board(board));
-//    std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
     std::cout << std::endl;
     
     for (int i = 0; i < BOARD_SIZE; i++) {
@@ -90,7 +88,12 @@ int main(int argc, const char * argv[]) {
             break;
         }
     
-        convert_input(input, from_x, from_y, to_x, to_y);
+        if (input.length() == 5) {
+            convert_input(input, from_x, from_y, to_x, to_y);
+        }
+        else {
+            convert_input(input, from_x, from_y, to_x, to_y, promotion_value);
+        }
         
         Piece *viewing_piece = board[from_x][from_y];
         
@@ -123,16 +126,6 @@ int main(int argc, const char * argv[]) {
             }
         }
     
-        // En passant
-        if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
-            Pawn *my_pawn = dynamic_cast<Pawn *>(viewing_piece);
-            if (from_x != to_x) {
-                if (board[to_x][to_y] == NULL) {
-                    board[to_x][my_pawn->isWhite() ? to_y + 1 : to_y - 1] = NULL;
-                }
-            }
-        }
-        
         halfmove_counter++;
         if (board[to_x][to_y] != NULL) {
             halfmove_counter = 0;
@@ -159,7 +152,15 @@ int main(int argc, const char * argv[]) {
         }
         else if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
             Pawn *pawn = dynamic_cast<Pawn *>(viewing_piece);
+            
             halfmove_counter = 0;
+            
+            // En passant
+            if (from_x != to_x) {
+                if (board[to_x][to_y] == NULL) {
+                    board[to_x][pawn->isWhite() ? to_y + 1 : to_y - 1] = NULL;
+                }
+            }
             
             if (abs(from_y - to_y) == 2) {
                 pawn->set_move_two_spaces(true);
@@ -167,6 +168,8 @@ int main(int argc, const char * argv[]) {
             
             int p_x = pawn->get_x_position();
             int p_y = pawn->get_y_position();
+            
+            // Pawn promotion
             if (pawn->get_x_position() == (pawn->isWhite() ? 0 : 7)) {
                 switch (promotion_value) {
                     case 'q':
@@ -190,7 +193,7 @@ int main(int argc, const char * argv[]) {
         }
         
         for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
+            for (int j = 3; j <= 4; j++) {
                 Pawn *pawn = dynamic_cast<Pawn *>(board[i][j]);
                 if (pawn != NULL && dynamic_cast<Pawn *>(viewing_piece) != pawn) {
                     pawn->set_move_two_spaces(false);
@@ -205,20 +208,26 @@ int main(int argc, const char * argv[]) {
         }
         
         King *king = NULL;
-        possible_moves.clear();
+        white_control.clear();
+        black_control.clear();
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] != NULL) {
                     if (dynamic_cast<King *>(board[i][j]) != NULL && board[i][j]->isWhite() == turn) {
                         king = dynamic_cast<King *>(board[i][j]);
                     }
-                    board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control);
+                    if (board[i][j]->isWhite() == turn) {
+                        board[i][j]->get_controlled_squares(white_control);
+                    }
+                    else {
+                        board[i][j]->get_controlled_squares(black_control);
+                    }
                 }
             }
         }
         
-        bool should_exit = false;
         int count = 0;
+        possible_moves.clear();
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] != NULL) {
@@ -246,17 +255,15 @@ int main(int argc, const char * argv[]) {
                         }
                         count += possible_moves.size();
                         if (count > 0) {
-                            should_exit = true;
+                            break;
                         }
                     }
                 }
             }
-            if (should_exit) {
+            if (count > 0) {
                 break;
             }
         }
-        
-        std::cout << count << std::endl;
         
         if (count == 0) {
             if (king->is_in_check()) {
@@ -266,10 +273,9 @@ int main(int argc, const char * argv[]) {
                 draw = true;
             }
         }
-        
-//        std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
+    
         FEN_values.push_back(compress_board(board));
-//        std::cout << compress_board(board) << " :: " << number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) << std::endl;
+        
         if (number_of_repeated_boards(FEN_values, *(FEN_values.end() - 1)) >= 3) {
             draw = true;
         }
@@ -283,6 +289,7 @@ int main(int argc, const char * argv[]) {
         std::cout << (turn ? "Black won this game 0 - 1" : "White won this game 1 - 0") << std::endl;
     }
     
+    //Time game parsing
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
     printf ("Elasped time is %.0lf nanoseconds.\n", dif);
@@ -355,11 +362,19 @@ void print_board (std::vector<std::vector<Piece *> >& board) {
 bool is_valid_input(std::string input) {
     if (INPUT_NOTATION == 0) {
         if (input.size() == 5) {
-            return (input[0] >= 'a' && input[0] <= 'h') && (input[1] >= '1' && input[1] <= '8') && (input[3] >= 'a' && input[3] <= 'h') && (input[4] >= '1' && input[4] <= '8');
+            if ((input[0] >= 'a' && input[0] <= 'h') && (input[1] >= '1' && input[1] <= '8')) {
+                if ((input[3] >= 'a' && input[3] <= 'h') && (input[4] >= '1' && input[4] <= '8')) {
+                    return true;
+                }
+            }
         }
         if (input.size() == 6) {
-            if (input[5] == 'q' || input[5] == 'r' || input[5] == 'b' || input[5] == 'n') {
-                return (input[0] >= 'a' && input[0] <= 'h') && (input[1] >= '1' && input[1] <= '8') && (input[3] >= 'a' && input[3] <= 'h') && (input[4] >= '1' && input[4] <= '8');
+            if (input[5] == 'q' || input[5] == 'Q' || input[5] == 'r' || input[5] == 'R' || input[5] == 'b' || input[5] == 'B' || input[5] == 'n' || input[5] == 'N') {
+                if ((input[0] >= 'a' && input[0] <= 'h') && (input[1] >= '1' && input[1] <= '8')) {
+                    if ((input[3] >= 'a' && input[3] <= 'h') && (input[4] >= '1' && input[4] <= '8')) {
+                        return true;
+                    }
+                }
             }
         }
     }

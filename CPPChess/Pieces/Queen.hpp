@@ -9,8 +9,8 @@
 #ifndef Queen_hpp
 #define Queen_hpp
 
-#include <stdio.h>
 #include "Piece.hpp"
+#include "Attack.hpp"
 
 class Queen: public Piece {
 public:

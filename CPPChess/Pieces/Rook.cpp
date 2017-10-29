@@ -22,110 +22,17 @@ bool Rook::did_move() {
 }
 
 void Rook::get_possible_move_list(std::vector<Point>& point_list) {
-    // Up
-    for (int i = 1; y_position - i >= 0; i++) {
-        if (board[x_position][y_position-i] == NULL) {
-            point_list.push_back(Point(x_position, y_position - i));
-        }
-        else {
-            if (board[x_position][y_position - i]->isWhite() != this->color) {
-                point_list.push_back(Point(x_position, y_position - i));
-            }
-            break;
-        }
-    }
-    
-    // Right
-    for (int i = 1; x_position + i < 8; i++) {
-        if (board[x_position+i][y_position] == NULL) {
-            point_list.push_back(Point(x_position+i, y_position));
-        }
-        else {
-            if (board[x_position+i][y_position]->isWhite() != this->color) {
-                point_list.push_back(Point(x_position + i, y_position));
-            }
-            break;
-        }
-    }
-    
-    // Down
-    for (int i = 1; y_position + i < 8; i++) {
-        if (board[x_position][y_position+i] == NULL) {
-            point_list.push_back(Point(x_position, y_position + i));
-        }
-        else {
-            if (board[x_position][y_position + i]->isWhite() != this->color) {
-                point_list.push_back(Point(x_position, y_position + i));
-            }
-            break;
-        }
-    }
-    
-    // Left
-    for (int i = 1; x_position - i >= 0; i++) {
-        if (board[x_position-i][y_position] == NULL) {
-            point_list.push_back(Point(x_position - i, y_position));
-        }
-        else {
-            if (board[x_position - i][y_position]->isWhite() != this->color) {
-                point_list.push_back(Point(x_position - i, y_position));
-            }
-            break;
-        }
-    }
+    attack_per_direction(board, point_list, x_position, y_position, -1, -1, false);
+    attack_per_direction(board, point_list, x_position, y_position, -1, 1, false);
+    attack_per_direction(board, point_list, x_position, y_position, 1, -1, false);
+    attack_per_direction(board, point_list, x_position, y_position, 1, 1, false);
 }
 
 void Rook::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
-    bool stop_upward = false;
-    bool stop_rightward = false;
-    bool stop_downward = false;
-    bool stop_leftward = false;
-    
-    for (int i = 1; !stop_upward || !stop_downward || !stop_leftward || !stop_rightward; i++) {
-        //upward
-        if (y_position - i < 0) {
-            stop_upward = true;
-        }
-        if (!stop_upward) {
-            if (board[x_position][y_position - i] != NULL) {
-                stop_upward = true;
-            }
-            point_list.push_back(Point(x_position, y_position - i));
-        }
-        
-        //downward
-        if (y_position + i > 7) {
-            stop_downward = true;
-        }
-        if (!stop_downward) {
-            if (board[x_position][y_position + i] != NULL) {
-                stop_downward = true;
-            }
-            point_list.push_back(Point(x_position, y_position + i));
-        }
-        
-        //rightward
-        if (x_position + i > 7) {
-            stop_rightward = true;
-        }
-        if (!stop_rightward) {
-            if (board[x_position + i][y_position] != NULL) {
-                stop_rightward = true;
-            }
-            point_list.push_back(Point(x_position + i, y_position));
-        }
-        
-        //leftward
-        if (x_position - i < 0) {
-            stop_leftward = true;
-        }
-        if (!stop_leftward) {
-            if (board[x_position - i][y_position] != NULL) {
-                stop_leftward = true;
-            }
-            point_list.push_back(Point(x_position - i, y_position));
-        }
-    }
+    attack_per_direction(board, point_list, x_position, y_position, -1, -1, true);
+    attack_per_direction(board, point_list, x_position, y_position, -1, 1, true);
+    attack_per_direction(board, point_list, x_position, y_position, 1, -1, true);
+    attack_per_direction(board, point_list, x_position, y_position, 1, 1, true);
 }
 
 bool Rook::validate_move(int to_x, int to_y) {
