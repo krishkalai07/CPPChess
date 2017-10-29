@@ -97,8 +97,8 @@ void King::get_controlled_squares(std::vector<Point>& point_list) {
 }
 
 bool King::vector_contains_point(std::vector<Point>& point_list, int x, int y) {
-    for (int i = 0; i < control_squares.size(); i++) {
-        if (x == control_squares[i].x && y == control_squares[i].y) {
+    for (int i = 0; i < point_list.size(); i++) {
+        if (x == point_list[i].x && y == point_list[i].y) {
             return true;
         }
     }

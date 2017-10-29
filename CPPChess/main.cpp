@@ -1,4 +1,4 @@
-//
+
 //  main.cpp
 //  CPPChess
 //
@@ -7,7 +7,6 @@
 //
 // For me, pointer as array reminder: cpp.sh/2shge
 
-#define BOARD_SIZE 8
 #define INPUT_NOTATION 0 //0 for long algebraic, 1 for 0-based array index, 2 for 1-based array index
 
 #include <iostream>
@@ -21,20 +20,14 @@
 #include "Rook.hpp"
 #include "Queen.hpp"
 #include "King.hpp"
+#include "BoardCompression.hpp"
+#include "MoveValidation.hpp"
 
-void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& white_control, std::vector<Point>& black_control);
+void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& white_control, std::vector<Point>& black_control, King *&white_king, King *&black_king);
 void print_board (std::vector<std::vector<Piece *> >& board);
-void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_y, int to_x, int to_y);
 bool is_valid_input (std::string input);
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y);
-std::string compress_board (std::vector<std::vector<Piece *> >& board);
-std::string get_full_FEN (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number);
-std::string get_piece_placement (std::vector<std::vector<Piece *> >& board);
-std::string get_castling_rights (std::vector<std::vector<Piece *> >& board);
-std::string get_en_passant_rights (std::vector<std::vector<Piece *> >& board);
-std::string index_to_algebraic(int x, int y);
 int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::string current);
-bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int from_y, int to_x, int to_y, bool turn);
 bool vector_contains_point(std::vector<Point>& point_list, int x, int y);
 
 int main(int argc, const char * argv[]) {
@@ -44,7 +37,9 @@ int main(int argc, const char * argv[]) {
     std::vector<Point> white_control;
     std::vector<Point> black_control;
     std::vector<std::string> FEN_values;
-    std::fstream fin("ScholarsMateVariation.txt");
+    std::fstream fin("TheImmortalGame.txt");
+    King *white_king = NULL;
+    King *black_king = NULL;
     std::string input;
     int halfmove_counter = 0;
     int move_number = 1;
@@ -63,7 +58,9 @@ int main(int argc, const char * argv[]) {
         }
     }
     
-    init_board(board, white_control, black_control);
+    init_board(board, white_control, black_control, white_king, black_king);
+    
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     print_board(board);
 //    std::cout << get_full_FEN(board, turn, halfmove_counter, move_number) << std::endl;
     FEN_values.push_back(compress_board(board));
@@ -104,18 +101,20 @@ int main(int argc, const char * argv[]) {
             continue;
         }
         
-        if (!viewing_piece->validate_move(to_x, to_y)) {
-            std::cout << "GIMME A BREAKPOINT" << std::endl;
-        }
+//        if (!viewing_piece->validate_move(to_x, to_y)) {
+//            std::cout << "";
+//        }
         if (!viewing_piece->validate_move(to_x, to_y)) {
             std::cout << "Entered illegal move" << std::endl;
             std::cout << std::endl;
             continue;
         }
-        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
-            std::cout << "GIMME ANOTHER BREAKPOINT" << std::endl;
+        //if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+        if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
+            std::cout << "";
         }
-        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+//        if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+        if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
             std::cout << "Move puts your king in check" << std::endl;
             std::cout << std::endl;
             continue;
@@ -141,7 +140,6 @@ int main(int argc, const char * argv[]) {
         turn = !turn;
         
         if (dynamic_cast<King *>(viewing_piece) != NULL) {
-            
             // Castle a king
             int rank = viewing_piece->isWhite() ? 7 : 0;
             
@@ -205,6 +203,7 @@ int main(int argc, const char * argv[]) {
                         
                         for (int i = 0 ; i < possible_moves.size(); i++) {
                             if (!simulate_move(board, t_from_x, t_from_y, possible_moves[i].x, possible_moves[i].y, turn)) {
+//                            if (!is_legal_move(board, t_from_x, t_from_y, possible_moves[i].x, possible_moves[i].y, turn ? white_king : black_king)) {
                                 possible_moves.erase(possible_moves.begin() + i);
                                 i--;
                             }
@@ -240,6 +239,10 @@ int main(int argc, const char * argv[]) {
         std::cout << (turn ? "Black won this game 0 - 1" : "White won this game 1 - 0") << std::endl;
     }
     
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
+    printf ("Elasped time is %.0lf nanoseconds.\n", dif);
+    
     // Delete the pointers in the vector (to free memeory)
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
@@ -252,7 +255,7 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& white_control, std::vector<Point>& black_control) {
+void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& white_control, std::vector<Point>& black_control, King *&white_king, King *&black_king) {
     //Rook
     board[0][0] = new Rook(0, 0,false, board);
     board[7][0] = new Rook(7, 0,false, board);
@@ -277,9 +280,9 @@ void init_board (std::vector<std::vector<Piece *> >& board, std::vector<Point>& 
     
     //King
     board[4][0] = new King(4, 0,false, board, white_control);
-    //black_king = (King)board[4][0];
+    black_king = dynamic_cast<King *>(board[4][0]);
     board[4][7] = new King(4, 7,true, board, black_control);
-    //white_king = (King)board[4][7];
+    white_king = dynamic_cast<King *>(board[4][7]);
     
     //Pawns
     for (int i = 0; i < 8; i++) {
@@ -305,56 +308,10 @@ void print_board (std::vector<std::vector<Piece *> >& board) {
     }
 }
 
-//void print_board (std::vector<std::vector<Piece *> >& board) {
-//    Piece *casted_value = NULL;
-//    for (int i = 0; i < BOARD_SIZE; i++) {
-//        for (int j = 0; j < BOARD_SIZE; j++) {
-//            Piece *temp = board[j][i];
-//            if (dynamic_cast<Pawn *>(temp) != NULL) {
-//                casted_value = dynamic_cast<Pawn *>(temp);
-//                std::cout << (casted_value->isWhite() ? "P" : "p");
-//            }
-//            else if (dynamic_cast<Knight *>(temp) != NULL) {
-//                casted_value = dynamic_cast<Knight *>(temp);
-//                std::cout << (casted_value->isWhite() ? "N" : "n");
-//            }
-//            else if (dynamic_cast<Bishop *>(temp) != NULL) {
-//                casted_value = dynamic_cast<Bishop *>(temp);
-//                std::cout << (casted_value->isWhite() ? "B" : "b");
-//            }
-//            else if (dynamic_cast<Rook *>(temp) != NULL) {
-//                casted_value = dynamic_cast<Rook *>(temp);
-//                std::cout << (casted_value->isWhite() ? "R" : "r");
-//            }
-//            else if (dynamic_cast<Queen *>(temp) != NULL) {
-//                casted_value = dynamic_cast<Queen *>(temp);
-//                std::cout << (casted_value->isWhite() ? "Q" : "q");
-//            }
-//            else if (dynamic_cast<King *>(temp) != NULL) {
-//                casted_value = dynamic_cast<King *>(temp);
-//                std::cout << (casted_value->isWhite() ? "K" : "k");
-//            }
-//            else {
-//                std::cout << " ";
-//            }
-//        }
-//        std::cout << std::endl;
-//    }
-//}
-
 bool is_valid_input(std::string input) {
     if (INPUT_NOTATION == 0) {
-        if (input[0] >= 'a' && input[0] <= 'h') {
-            if (input[1] >= '1' && input[1] <= '8') {
-                if (input[3] >= 'a' && input[3] <= 'h') {
-                    if (input[4] >= '1' && input[4] <= '8') {
-                        return true;
-                    }
-                }
-            }
-        }
+        return (input[0] >= 'a' && input[0] <= 'h') && (input[1] >= '1' && input[1] <= '8') && (input[3] >= 'a' && input[3] <= 'h') && (input[4] >= '1' && input[4] <= '8');
     }
-    
     return false;
 }
 
@@ -365,50 +322,6 @@ void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int 
     to_y = 7 - (input[4] - 49);
 }
 
-void move_piece(std::vector<std::vector<Piece *> >& board, int from_x, int from_y, int to_x, int to_y) {
-//    std::cout << "move_piece::from_coords: " << from_x << " " << from_y << std::endl;
-    Piece *viewing_piece = board[from_x][from_y];
-    board[to_x][to_y] = viewing_piece;
-    viewing_piece->set_x_position(to_x);
-    viewing_piece->set_y_position(to_y);
-    board[from_x][from_y] = NULL;
-}
-
-std::string compress_board (std::vector<std::vector<Piece *> >& board) {
-    std::string compression;
-    
-    compression += get_piece_placement(board);
-    compression += " ";
-    compression += get_castling_rights(board);
-    compression += " ";
-    compression += get_en_passant_rights(board);
-    
-    return compression;
-}
-
-std::string get_full_FEN (std::vector<std::vector<Piece *> >& board, bool turn, int halfmove_counter, int move_number) {
-    std::string compression;
-
-    compression += get_piece_placement(board);
-    compression += turn ? " w " : " b ";
-    compression += get_castling_rights(board);
-    compression += ' ';
-    compression += get_en_passant_rights(board);
-    
-    compression += " " + std::to_string(halfmove_counter);
-    compression += " " + std::to_string(move_number);
-    
-    return compression;
-}
-
-std::string index_to_algebraic(int x, int y) {
-    std::string algebraic;
-    
-    algebraic += 'a' + x;
-    algebraic += '1' + (7-y);
-    
-    return algebraic;
-}
 
 int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::string current) {
     int count = 0;
@@ -418,134 +331,6 @@ int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::stri
         }
     }
     return count;
-}
-
-std::string get_piece_placement (std::vector<std::vector<Piece *> >& board) {
-    std::string board_compression;
-    int empty_squares = 0;
-    
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        empty_squares = 0;
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            if (board[j][i] == NULL) {
-                empty_squares++;
-            }
-            else {
-                if (empty_squares != 0) {
-                    board_compression += std::to_string(empty_squares);
-                }
-                board_compression += board[j][i]->get_abbreviation();
-                empty_squares = 0;
-            }
-        }
-        
-        if (empty_squares != 0) {
-            board_compression += std::to_string(empty_squares);
-        }
-        
-        if (i != 7) {
-            board_compression += '/';
-        }
-    }
-    
-    return board_compression;
-}
-
-std::string get_castling_rights (std::vector<std::vector<Piece *> >& board) {
-    std::string castling_rights;
-    
-    if (board[4][7] != NULL && dynamic_cast<King *>(board[4][7]) != NULL && !dynamic_cast<King *>(board[4][7])->did_move()) {
-        if (board[7][7] != NULL && dynamic_cast<Rook *>(board[7][7]) != NULL && !dynamic_cast<Rook *>(board[7][7])->did_move()) {
-            castling_rights += "K";
-        }
-        
-        if (board[0][7] != NULL && dynamic_cast<Rook *>(board[0][7]) != NULL && !dynamic_cast<Rook *>(board[0][7])->did_move()) {
-            castling_rights += "Q";
-        }
-    }
-    
-    if (board[4][0] != NULL && dynamic_cast<King *>(board[4][0]) != NULL && !dynamic_cast<King *>(board[4][0])->did_move()) {
-        if (board[7][0] != NULL && dynamic_cast<Rook *>(board[7][0]) != NULL && !dynamic_cast<Rook *>(board[7][0])->did_move()) {
-            castling_rights += "k";
-        }
-        
-        if (board[0][0] != NULL && dynamic_cast<Rook *>(board[0][0]) != NULL && !dynamic_cast<Rook *>(board[0][0])->did_move()) {
-            castling_rights += "q";
-        }
-    }
-    
-    if (castling_rights.size() == 0) {
-        castling_rights += "-";
-    }
-    
-    return castling_rights;
-}
-
-std::string get_en_passant_rights (std::vector<std::vector<Piece *> >& board) {
-    std::string en_passant_destination;
-    
-    for (int i = 3; i <= 4; i++) {
-        for (int j = 0; j < 7; j++) {
-            if (board[j][i] != NULL) {
-                if (dynamic_cast<Pawn *>(board[j][i]) != NULL) {
-                    if(dynamic_cast<Pawn *>(board[j][i])->did_move_two_spaces_last_move()) {
-                        int direction = board[j][i]->isWhite() ? 1 : -1;
-                        en_passant_destination += index_to_algebraic(j, i + direction);
-                        return en_passant_destination;
-                    }
-                }
-            }
-        }
-    }
-    
-    if (en_passant_destination.size() == 0) {
-        en_passant_destination += '-';
-    }
-    
-    return en_passant_destination;
-}
-
-bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int from_y, int to_x, int to_y, bool turn) {
-    std::vector<Point> white_control;
-    std::vector<Point> black_control;
-    King *white_king = NULL;
-    King *black_king = NULL;
-    
-//    std::cout << "simulate::from_coords: " << from_x << " " << from_y << std::endl;
-    
-    move_piece(board, from_x, from_y, to_x, to_y);
-    
-    for (int i = 0; i < BOARD_SIZE; i++) {
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            if (board[i][j] != NULL) {
-                board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control, board);
-                if (dynamic_cast<King *>(board[i][j]) != NULL) {
-                    if (board[i][j]->isWhite()) {
-                        white_king = dynamic_cast<King *>(board[i][j]);
-                    }
-                    else {
-                        black_king = dynamic_cast<King *>(board[i][j]);
-                    }
-                }
-            }
-        }
-    }
-    
-    if (turn) {
-        if (vector_contains_point(black_control, white_king->get_x_position(), white_king->get_y_position())) {
-            move_piece(board, to_x, to_y, from_x, from_y);
-            return false;
-        }
-    }
-    else {
-        if (vector_contains_point(white_control, black_king->get_x_position(), black_king->get_y_position())) {
-            move_piece(board, to_x, to_y, from_x, from_y);
-            return false;
-        }
-    }
-    
-    move_piece(board, to_x, to_y, from_x, from_y);
-    return true;
 }
 
 bool vector_contains_point(std::vector<Point>& point_list, int x, int y) {
