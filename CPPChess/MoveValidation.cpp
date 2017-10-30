@@ -20,10 +20,9 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
             if (board[i][j] != NULL) {
                 if (board[i][j]->isWhite() != turn) {
                     board[i][j]->get_controlled_squares(controlled_squares, board);
-                    
-                    if (dynamic_cast<King *>(board[i][j]) != NULL) {
-                        king = dynamic_cast<King *>(board[i][j]);
-                    }
+                }
+                if (board[i][j]->isWhite() == turn && dynamic_cast<King *>(board[i][j]) != NULL) {
+                    king = dynamic_cast<King *>(board[i][j]);
                 }
             }
         }
@@ -128,7 +127,28 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
     }
     else {
         move_piece(board, to_x, to_y, from_x, from_y);
-        return simulate_move(board, from_x, from_y, to_x, to_y, king->isWhite());
+        std::vector<Point> point_list;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                point_list.clear();
+                if (i == 0 && i == j) {
+                    continue;
+                }
+                
+                attack_per_direction(board, point_list, to_x, to_y, i, j, false);
+                
+                for (Point p : point_list) {
+                    if (board[p.x][p.y] != NULL) {
+                        if ((i == 0 || j == 0) && (dynamic_cast<Rook *>(board[p.x][p.y]) != NULL || dynamic_cast<Queen *>(board[p.x][p.y]) != NULL)) {
+                            return false;
+                        }
+                        if ((abs(i) == 1 && abs(j) == 1) && (dynamic_cast<Bishop *>(board[p.x][p.y]) != NULL || dynamic_cast<Queen *>(board[p.x][p.y]) != NULL)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
     }
     move_piece(board, to_x, to_y, from_x, from_y);
     return true;

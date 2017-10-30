@@ -40,7 +40,7 @@ int main(int argc, const char * argv[]) {
     std::vector<Point> white_control;
     std::vector<Point> black_control;
     std::vector<std::string> FEN_values;
-    std::fstream fin("TheImmortalGame.txt");
+    std::fstream fin("RulesTesting.txt");
     King *white_king = NULL;
     King *black_king = NULL;
     std::string input;
@@ -90,7 +90,7 @@ int main(int argc, const char * argv[]) {
             break;
         }
     
-        if (input.length() == 5) {
+        if (input.length() == 4) {
             convert_input(input, from_x, from_y, to_x, to_y);
         }
         else {
@@ -108,12 +108,18 @@ int main(int argc, const char * argv[]) {
             continue;
         }
         
+//        if (!viewing_piece->validate_move(to_x, to_y)) {
+//            std::cout << "";
+//        }
         if (!viewing_piece->validate_move(to_x, to_y)) {
             std::cout << "Entered illegal move" << std::endl;
             std::cout << std::endl;
             continue;
         }
         if (white_king->is_in_check() || black_king->is_in_check()) {
+//            if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
+//                std::cout << "";
+//            }
             if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
                 std::cout << "Move puts your king in check" << std::endl;
                 std::cout << std::endl;
@@ -121,6 +127,9 @@ int main(int argc, const char * argv[]) {
             }
         }
         else {
+//            if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
+//                std::cout << "";
+//            }
             if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
                 std::cout << "Move puts your king in check" << std::endl;
                 std::cout << std::endl;
@@ -172,7 +181,7 @@ int main(int argc, const char * argv[]) {
             int p_y = pawn->get_y_position();
             
             // Pawn promotion
-            if (pawn->get_x_position() == (pawn->isWhite() ? 0 : 7)) {
+            if (pawn->get_y_position() == (pawn->isWhite() ? 0 : 7)) {
                 switch (promotion_value) {
                     case 'q':
                     case 'Q':
@@ -250,7 +259,7 @@ int main(int argc, const char * argv[]) {
                                 }
                             }
                             else {
-                                if (!is_legal_move(board, t_from_x, t_from_y, possible_moves[k].x, possible_moves[k].y, turn ? black_king : white_king)) {
+                                if (!is_legal_move(board, t_from_x, t_from_y, possible_moves[k].x, possible_moves[k].y, turn ? white_king : black_king)) {
                                     possible_moves.erase(possible_moves.begin() + k);
                                     continue;
                                 }
@@ -268,7 +277,7 @@ int main(int argc, const char * argv[]) {
                 break;
             }
         }
-        
+
         if (count == 0) {
             if (king->is_in_check()) {
                 game_ended = true;
@@ -365,17 +374,17 @@ void print_board (std::vector<std::vector<Piece *> >& board) {
 
 bool is_valid_input(std::string input) {
     if (INPUT_NOTATION == 0) {
-        if (input.size() == 5) {
+        if (input.size() == 4) {
             if ((input[0] >= 'a' && input[0] <= 'h') && (input[1] >= '1' && input[1] <= '8')) {
-                if ((input[3] >= 'a' && input[3] <= 'h') && (input[4] >= '1' && input[4] <= '8')) {
+                if ((input[2] >= 'a' && input[2] <= 'h') && (input[3] >= '1' && input[3] <= '8')) {
                     return true;
                 }
             }
         }
-        if (input.size() == 6) {
-            if (input[5] == 'q' || input[5] == 'Q' || input[5] == 'r' || input[5] == 'R' || input[5] == 'b' || input[5] == 'B' || input[5] == 'n' || input[5] == 'N') {
+        if (input.size() == 5) {
+            if (input[4] == 'q' || input[4] == 'Q' || input[4] == 'r' || input[4] == 'R' || input[4] == 'b' || input[4] == 'B' || input[4] == 'n' || input[4] == 'N') {
                 if ((input[0] >= 'a' && input[0] <= 'h') && (input[1] >= '1' && input[1] <= '8')) {
-                    if ((input[3] >= 'a' && input[3] <= 'h') && (input[4] >= '1' && input[4] <= '8')) {
+                    if ((input[2] >= 'a' && input[2] <= 'h') && (input[3] >= '1' && input[3] <= '8')) {
                         return true;
                     }
                 }
@@ -388,13 +397,13 @@ bool is_valid_input(std::string input) {
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y) {
     from_x = input[0] - 97;
     from_y = 7 - (input[1] - 49);
-    to_x = input[3] - 97;
-    to_y = 7 - (input[4] - 49);
+    to_x = input[2] - 97;
+    to_y = 7 - (input[3] - 49);
 }
 
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y, char &promotion_value) {
     convert_input(input, from_x, from_y, to_x, to_y);
-    promotion_value = input[6];
+    promotion_value = input[4];
 }
 
 int number_of_repeated_boards(std::vector<std::string>& FEN_positions, std::string current) {

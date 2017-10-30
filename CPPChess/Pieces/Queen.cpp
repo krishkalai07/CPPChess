@@ -29,15 +29,15 @@ void Queen::get_possible_move_list(std::vector<Point>& point_list) {
 }
 
 void Queen::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
-    attack_per_direction(board, point_list, x_position, y_position, -1, -1, true);
-    attack_per_direction(board, point_list, x_position, y_position, -1, 1, true);
-    attack_per_direction(board, point_list, x_position, y_position, 1, -1, true);
-    attack_per_direction(board, point_list, x_position, y_position, 1, 1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, -1, -1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, -1, 1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 1, -1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 1, 1, true);
     
-    attack_per_direction(board, point_list, x_position, y_position, 0, 1, true);
-    attack_per_direction(board, point_list, x_position, y_position, 1, 0, true);
-    attack_per_direction(board, point_list, x_position, y_position, 0, -1, true);
-    attack_per_direction(board, point_list, x_position, y_position, -1, 0, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 0, 1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 1, 0, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 0, -1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, -1, 0, true);
 }
 
 bool Queen::validate_move(int to_x, int to_y) {

@@ -22,17 +22,17 @@ bool Rook::did_move() {
 }
 
 void Rook::get_possible_move_list(std::vector<Point>& point_list) {
-    attack_per_direction(board, point_list, x_position, y_position, -1, -1, false);
-    attack_per_direction(board, point_list, x_position, y_position, -1, 1, false);
-    attack_per_direction(board, point_list, x_position, y_position, 1, -1, false);
-    attack_per_direction(board, point_list, x_position, y_position, 1, 1, false);
+    attack_per_direction(board, point_list, x_position, y_position, -1, 0, false);
+    attack_per_direction(board, point_list, x_position, y_position, 1, 0, false);
+    attack_per_direction(board, point_list, x_position, y_position, 0, -1, false);
+    attack_per_direction(board, point_list, x_position, y_position, 0, 1, false);
 }
 
 void Rook::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
-    attack_per_direction(board, point_list, x_position, y_position, -1, -1, true);
-    attack_per_direction(board, point_list, x_position, y_position, -1, 1, true);
-    attack_per_direction(board, point_list, x_position, y_position, 1, -1, true);
-    attack_per_direction(board, point_list, x_position, y_position, 1, 1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, -1, 0, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 1, 0, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 0, -1, true);
+    attack_per_direction(temp_board, point_list, x_position, y_position, 0, 1, true);
 }
 
 bool Rook::validate_move(int to_x, int to_y) {

@@ -115,7 +115,7 @@ bool King::validate_move(int x, int y) {
     
     if (abs(x_position - x) == 2) {
         if (!has_moved) {
-            Rook *edge_rook = dynamic_cast<Rook *>(x_position - x == 2 ? board[7][(color ? 7 : 0)] : board[0][(color ? 7 : 0)]);
+            Rook *edge_rook = dynamic_cast<Rook *>(x - x_position == 2 ? board[7][(color ? 7 : 0)] : board[0][(color ? 7 : 0)]);
             if (edge_rook != NULL && !edge_rook->did_move()) {
                 if ((x - x_position > 0 && board[x_position+1][y_position] == NULL && board[x_position+2][y_position] == NULL) ||
                     (x - x_position < 0 && board[x_position-1][y_position] == NULL && board[x_position-2][y_position] == NULL)) {
