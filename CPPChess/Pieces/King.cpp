@@ -44,7 +44,7 @@ void King::get_possible_move_list(std::vector<Point>& point_list) {
                     }
                 }
                 else {
-                    if (this->color != board[x_position+i][y_position+j]->isWhite()) {
+                    if (this->color != board[x_position+i][y_position+j]->is_white()) {
                         point_list.push_back(Point(x_position+i, y_position+j));
                     }
                 }
@@ -148,7 +148,7 @@ void King::update_controlled_spaces() {
     
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
-            if (board[i][j] != NULL && board[i][j]->isWhite() != color) {
+            if (board[i][j] != NULL && board[i][j]->is_white() != color) {
                 board[i][j]->get_controlled_squares(control_squares);
             }
         }

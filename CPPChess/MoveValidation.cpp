@@ -18,10 +18,10 @@ bool simulate_move(std::vector<std::vector<Piece *> > board, int from_x, int fro
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             if (board[i][j] != NULL) {
-                if (board[i][j]->isWhite() != turn) {
+                if (board[i][j]->is_white() != turn) {
                     board[i][j]->get_controlled_squares(controlled_squares, board);
                 }
-                if (board[i][j]->isWhite() == turn && dynamic_cast<King *>(board[i][j]) != NULL) {
+                if (board[i][j]->is_white() == turn && dynamic_cast<King *>(board[i][j]) != NULL) {
                     king = dynamic_cast<King *>(board[i][j]);
                 }
             }
@@ -60,7 +60,7 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
         int tmp_x = king->get_x_position();
         int tmp_y = king->get_y_position();
         
-        do {
+        while (true) {
             if (direction % 2 == 0) {
                 tmp_x++;
             }
@@ -81,14 +81,14 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
             
             if (board[tmp_x][tmp_y] != NULL) {
                 if (direction == 2 || direction == 3 || direction == 5 || direction == 7) {
-                    if (board[tmp_x][tmp_y]->isWhite() != king->isWhite()) {
+                    if (board[tmp_x][tmp_y]->is_white() != king->is_white()) {
                         if (dynamic_cast<Rook *>(board[tmp_x][tmp_y]) != NULL || dynamic_cast<Queen *>(board[tmp_x][tmp_y]) != NULL) {
                             move_piece(board, to_x, to_y, from_x, from_y);
                             if (tmp_x == to_x && tmp_y == to_y) {
-                                return board[from_x][from_y]->isWhite() == king->isWhite();
+                                return board[from_x][from_y]->is_white() == king->is_white();
                             }
                             else {
-                                return board[tmp_y][tmp_y]->isWhite() == king->isWhite();
+                                return board[tmp_y][tmp_y]->is_white() == king->is_white();
                             }
                         }
                         else {
@@ -102,14 +102,14 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
                     }
                 }
                 else if (direction == 10 || direction == 14 || direction == 25 || direction == 21) {
-                    if (board[tmp_x][tmp_y]->isWhite() != king->isWhite()) {
+                    if (board[tmp_x][tmp_y]->is_white() != king->is_white()) {
                         if (dynamic_cast<Bishop *>(board[tmp_x][tmp_y]) != NULL || dynamic_cast<Queen *>(board[tmp_x][tmp_y]) != NULL) {
                             move_piece(board, to_x, to_y, from_x, from_y);
                             if (tmp_x == to_x && tmp_y == to_y) {
-                                return board[from_x][from_y]->isWhite() == king->isWhite();
+                                return board[from_x][from_y]->is_white() == king->is_white();
                             }
                             else {
-                                return board[tmp_y][tmp_y]->isWhite() == king->isWhite();
+                                return board[tmp_y][tmp_y]->is_white() == king->is_white();
                             }
                         }
                         else {
@@ -123,7 +123,7 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
                     }
                 }
             }
-        } while (tmp_x >= 0 && tmp_x < 8 && tmp_y >= 0 && tmp_y < 8);
+        }
     }
     else {
         move_piece(board, to_x, to_y, from_x, from_y);
@@ -156,50 +156,25 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
 
 //15  5  10
 //  \ | /
-//3 - K - 2
+//3 — K — 2
 //  / | \
 //21  7  14
 int get_relative_location (std::vector<std::vector<Piece *> >& board, int from_x, int from_y, King *king) {
     int king_x = king->get_x_position();
     int king_y = king->get_y_position();
     if (king_x == from_x) {
-        // Same rank
-        if (king_y - from_y > 0) {
-            return 5;
-        }
-        else {
-            return 7;
-        }
+        return king_y - from_y > 0 ? 5 : 7;
     }
     else if (king_y == from_y) {
-        // Same file
-        if (king_x - from_x > 0) {
-            return 2;
-        }
-        else {
-            return 3;
-        }
+        return king_x - from_x > 0 ? 2 : 3;
     }
     else if (king_y - from_y == -(king_x - from_x)) {
-        // Same diagonal
-        if (king_y - from_y > 0) {
-            return 10;
-        }
-        else {
-            return 21;
-        }
+        return king_y - from_y > 0 ? 10 : 21;
     }
     else if (king_y - from_y == king_x - from_x) {
-        // Same anti-diagonal
-        if (king_y - from_y > 0) {
-            return 15;
-        }
-        else {
-            return 14;
-        }
+        return king_y - from_y > 0 ? 15 : 14;
     }
     else {
-        // None of the above
         return 1;
     }
 }

@@ -7,7 +7,7 @@
 //
 // For me, pointer as array reminder: cpp.sh/2shge
 
-#define INPUT_NOTATION 0 //0 for long algebraic, 1 for 0-based array index, 2 for 1-based array index
+#define INPUT_NOTATION 0 //0 for long algebraic, 1 short algeabraic
 
 #include <iostream>
 #include <fstream>
@@ -35,7 +35,6 @@ bool vector_contains_point(std::vector<Point>& point_list, int x, int y);
 
 int main(int argc, const char * argv[]) {
     std::vector<std::vector<Piece *> > board;
-    //std::vector<Piece *> file;
     std::vector<Point> possible_moves;
     std::vector<Point> white_control;
     std::vector<Point> black_control;
@@ -44,8 +43,8 @@ int main(int argc, const char * argv[]) {
     King *white_king = NULL;
     King *black_king = NULL;
     std::string input;
-    int halfmove_counter = 0;
-    int move_number = 1;
+    int halfmove_clock = 0;
+    int fullmove_counter = 1;
     int from_x = 0;
     int from_y = 0;
     int to_x = 0;
@@ -61,20 +60,21 @@ int main(int argc, const char * argv[]) {
             board[i].push_back(NULL);
         }
     }
-    init_board(board, white_control, black_control, white_king, black_king);
     
-    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    
+    decompress_board(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", white_king, black_king, white_control, black_control, turn, halfmove_clock, fullmove_counter);
+    //decompress_board(board, "r1n4N/1Kp2b1p/PPp1pr2/PRbQ1pR1/2PP1p1k/PN3B1P/p1PB1q1p/5n2 w - - 0 1", white_king, black_king, white_control, black_control, turn, halfmove_clock, fullmove_counter);
     print_board(board);
     FEN_values.push_back(compress_board(board));
+    
+    std::cout << get_full_FEN(board, turn, halfmove_clock, fullmove_counter);
     std::cout << std::endl;
     
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             if (board[i][j] != NULL) {
-                board[i][j]->get_controlled_squares(board[i][j]->isWhite() ? white_control : black_control);
+                board[i][j]->get_controlled_squares(board[i][j]->is_white() ? white_control : black_control);
                 
-                if (board[i][j]->isWhite() == turn) {
+                if (board[i][j]->is_white() == turn) {
                     board[i][j]->get_possible_move_list(possible_moves);
                 }
             }
@@ -83,7 +83,7 @@ int main(int argc, const char * argv[]) {
     
     while (!draw && !game_ended && !fin.eof()) {
         fin >> input;
-        std::cout << (turn ? std::to_string(move_number) + " " : "") << input << std::endl;
+        std::cout << (turn ? std::to_string(fullmove_counter) + " " : "") << input << std::endl;
 //        std::cin >> input;
         
         if (!is_valid_input(input)) {
@@ -103,23 +103,17 @@ int main(int argc, const char * argv[]) {
             std::cout << "Can't move a square" << std::endl;
             continue;
         }
-        if (viewing_piece->isWhite() != turn) {
+        if (viewing_piece->is_white() != turn) {
             std::cout << "Can't move that piece, wrong color" << std::endl;
             continue;
         }
-        
-//        if (!viewing_piece->validate_move(to_x, to_y)) {
-//            std::cout << "";
-//        }
+
         if (!viewing_piece->validate_move(to_x, to_y)) {
             std::cout << "Entered illegal move" << std::endl;
             std::cout << std::endl;
             continue;
         }
         if (white_king->is_in_check() || black_king->is_in_check()) {
-//            if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
-//                std::cout << "";
-//            }
             if (!simulate_move(board, from_x, from_y, to_x, to_y, turn)) {
                 std::cout << "Move puts your king in check" << std::endl;
                 std::cout << std::endl;
@@ -127,9 +121,6 @@ int main(int argc, const char * argv[]) {
             }
         }
         else {
-//            if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
-//                std::cout << "";
-//            }
             if (!is_legal_move(board, from_x, from_y, to_x, to_y, turn ? white_king : black_king)) {
                 std::cout << "Move puts your king in check" << std::endl;
                 std::cout << std::endl;
@@ -137,19 +128,19 @@ int main(int argc, const char * argv[]) {
             }
         }
     
-        halfmove_counter++;
+        halfmove_clock++;
         if (board[to_x][to_y] != NULL) {
-            halfmove_counter = 0;
+            halfmove_clock = 0;
         }
         move_piece(board, from_x, from_y, to_x, to_y);
         if (!turn) {
-            move_number++;
+            fullmove_counter++;
         }
         turn = !turn;
         
         if (dynamic_cast<King *>(viewing_piece) != NULL) {
             // Castle a king
-            int rank = viewing_piece->isWhite() ? 7 : 0;
+            int rank = viewing_piece->is_white() ? 7 : 0;
             
             if (to_x - from_x == 2) {
                 // Castle Kingside
@@ -164,12 +155,12 @@ int main(int argc, const char * argv[]) {
         else if (dynamic_cast<Pawn *>(viewing_piece) != NULL) {
             Pawn *pawn = dynamic_cast<Pawn *>(viewing_piece);
             
-            halfmove_counter = 0;
+            halfmove_clock = 0;
             
             // En passant
             if (from_x != to_x) {
                 if (board[to_x][to_y] == NULL) {
-                    board[to_x][pawn->isWhite() ? to_y + 1 : to_y - 1] = NULL;
+                    board[to_x][pawn->is_white() ? to_y + 1 : to_y - 1] = NULL;
                 }
             }
             
@@ -181,23 +172,23 @@ int main(int argc, const char * argv[]) {
             int p_y = pawn->get_y_position();
             
             // Pawn promotion
-            if (pawn->get_y_position() == (pawn->isWhite() ? 0 : 7)) {
+            if (pawn->get_y_position() == (pawn->is_white() ? 0 : 7)) {
                 switch (promotion_value) {
                     case 'q':
                     case 'Q':
-                        board[p_x][p_y] = new Queen(p_x, p_y, pawn->isWhite(), board);
+                        board[p_x][p_y] = new Queen(p_x, p_y, pawn->is_white(), board);
                         break;
                     case 'r':
                     case 'R':
-                        board[p_x][p_y] = new Rook(p_x, p_y, pawn->isWhite(), board);
+                        board[p_x][p_y] = new Rook(p_x, p_y, pawn->is_white(), board);
                         break;
                     case 'b':
                     case 'B':
-                        board[p_x][p_y] = new Bishop(p_x, p_y, pawn->isWhite(), board);
+                        board[p_x][p_y] = new Bishop(p_x, p_y, pawn->is_white(), board);
                         break;
                     case 'n':
                     case 'N':
-                        board[p_x][p_y] = new Knight(p_x, p_y, pawn->isWhite(), board);
+                        board[p_x][p_y] = new Knight(p_x, p_y, pawn->is_white(), board);
                         break;
                 }
             }
@@ -216,20 +207,16 @@ int main(int argc, const char * argv[]) {
         
         print_board(board);
         
-        if (halfmove_counter >= 50) {
+        if (halfmove_clock >= 50) {
             draw = true;
         }
         
-        King *king = NULL;
         white_control.clear();
         black_control.clear();
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] != NULL) {
-                    if (dynamic_cast<King *>(board[i][j]) != NULL && board[i][j]->isWhite() == turn) {
-                        king = dynamic_cast<King *>(board[i][j]);
-                    }
-                    if (board[i][j]->isWhite() == turn) {
+                    if (board[i][j]->is_white() == turn) {
                         board[i][j]->get_controlled_squares(white_control);
                     }
                     else {
@@ -244,7 +231,7 @@ int main(int argc, const char * argv[]) {
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] != NULL) {
-                    if (board[i][j]->isWhite() == turn) {
+                    if (board[i][j]->is_white() == turn) {
                         possible_moves.clear();
                         board[i][j]->get_possible_move_list(possible_moves);
                         
@@ -252,7 +239,7 @@ int main(int argc, const char * argv[]) {
                         int t_from_y = board[i][j]->get_y_position();
                         
                         for (int k = 0; k < possible_moves.size();) {
-                            if (king->is_in_check()) {
+                            if ((turn ? white_king : black_king)->is_in_check()) {
                                 if (!simulate_move(board, t_from_x, t_from_y, possible_moves[k].x, possible_moves[k].y, turn)) {
                                     possible_moves.erase(possible_moves.begin() + k);
                                     continue;
@@ -279,7 +266,7 @@ int main(int argc, const char * argv[]) {
         }
 
         if (count == 0) {
-            if (king->is_in_check()) {
+            if ((turn ? white_king : black_king)->is_in_check()) {
                 game_ended = true;
             }
             else {
@@ -301,11 +288,6 @@ int main(int argc, const char * argv[]) {
     if (game_ended) {
         std::cout << (turn ? "Black won this game 0 - 1" : "White won this game 1 - 0") << std::endl;
     }
-    
-    //Time game parsing
-    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-    double dif = std::chrono::duration_cast<std::chrono::nanoseconds>( t2 - t1 ).count();
-    printf ("Elasped time is %.0lf nanoseconds.\n", dif);
     
     // Delete the pointers in the vector (to free memeory)
     for (int i = 0; i < BOARD_SIZE; i++) {
@@ -391,14 +373,17 @@ bool is_valid_input(std::string input) {
             }
         }
     }
+
     return false;
 }
 
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y) {
-    from_x = input[0] - 97;
-    from_y = 7 - (input[1] - 49);
-    to_x = input[2] - 97;
-    to_y = 7 - (input[3] - 49);
+    if (INPUT_NOTATION == 0) {
+        from_x = input[0] - 97;
+        from_y = 7 - (input[1] - 49);
+        to_x = input[2] - 97;
+        to_y = 7 - (input[3] - 49);
+    }
 }
 
 void convert_input (std::string input, int &from_x, int &from_y, int &to_x, int &to_y, char &promotion_value) {

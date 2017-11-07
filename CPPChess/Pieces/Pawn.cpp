@@ -40,7 +40,7 @@ void Pawn::get_controlled_squares(std::vector<Point>& point_list, std::vector<st
 void Pawn::get_forward_moves(std::vector<Point>& point_list) {
     int movement_direction = color ? -1 : 1;
     
-    if (y_position == (isWhite() ? 6 : 1)) {
+    if (y_position == (is_white() ? 6 : 1)) {
         if (board[x_position][y_position + (2 * movement_direction)] == NULL) {
             point_list.push_back(Point(x_position, y_position + (2*movement_direction)));
         }
@@ -58,7 +58,7 @@ void Pawn::get_capture_moves(std::vector<Point>& point_list) {
     if (x_position != 0) {
         // Diagonal
         if (board[x_position - 1][y_position + movement_direction] != NULL) {
-            if (board[x_position - 1][y_position + movement_direction]->isWhite() != color) {
+            if (board[x_position - 1][y_position + movement_direction]->is_white() != color) {
                 point_list.push_back(Point(x_position - 1, y_position + movement_direction));
             }
         }
@@ -80,17 +80,17 @@ void Pawn::get_capture_moves(std::vector<Point>& point_list) {
     if (x_position != 7) {
         // Diagonal
         if (board[x_position + 1][y_position + movement_direction] != NULL) {
-            if (board[x_position + 1][y_position + movement_direction]->isWhite() != color) {
+            if (board[x_position + 1][y_position + movement_direction]->is_white() != color) {
                 point_list.push_back(Point(x_position + 1, y_position + movement_direction));
             }
         }
         
         if (y_position == (color ? 3 : 4)) {
-            if (board[x_position - 1][y_position + movement_direction] != NULL) {
-                Pawn *casted_piece = dynamic_cast<Pawn *>(board[x_position - 1][y_position]);
+            if (board[x_position + 1][y_position + movement_direction] != NULL) {
+                Pawn *casted_piece = dynamic_cast<Pawn *>(board[x_position + 1][y_position]);
                 if (casted_piece != NULL) {
                     if (casted_piece->moved_two_spaces_last_move) {
-                        point_list.push_back(Point(x_position - 1, y_position + movement_direction));
+                        point_list.push_back(Point(x_position + 1, y_position + movement_direction));
                     }
                 }
             }
@@ -124,7 +124,7 @@ bool Pawn::validate_move(int x, int y) {
         }
         else {
             if (board[x][y] != NULL) {
-                if (board[x][y]->isWhite() != color) {
+                if (board[x][y]->is_white() != color) {
                     return true;
                 }
             }

@@ -15,7 +15,7 @@ int get_material_advantage (std::vector<std::vector <Piece *> >& board) {
     for (int i = 0; i < board.size(); i++) {
         for (int j = 0; j < board[i].size(); j++) {
             if (board[i][j] != NULL) {
-                if (board[i][j]->isWhite()) {
+                if (board[i][j]->is_white()) {
                     white_material += board[i][j]->get_material_value();
                 }
                 else {
@@ -40,24 +40,24 @@ int get_isolated_pawns (std::vector<std::vector <Piece *> >& board, bool color) 
     
     for (int i = 1; i < 7; i++) {
         for (int j = 0; j < 8; j++) {
-            if (board[i][j] != NULL && dynamic_cast<Pawn *>(board[i][j]) != NULL && board[i][j]->isWhite() == color) {
+            if (board[i][j] != NULL && dynamic_cast<Pawn *>(board[i][j]) != NULL && board[i][j]->is_white() == color) {
                 if (i != 0 && i != 7) {
                     if (pawns_in_file(board, i - 1, color) == 0 && pawns_in_file(board, i + 1, color) == 0) {
-                        pawn_count += 1;
+                        pawn_count++;
                         i++;
                         break;
                     }
                 }
                 else if (i != 0) {
                     if (pawns_in_file(board, i - 1, color) == 0) {
-                        pawn_count += 1;
+                        pawn_count++;
                         i++;
                         break;
                     }
                 }
                 else {
                     if (pawns_in_file(board, i + 1, color) == 0) {
-                        pawn_count += 1;
+                        pawn_count++;
                         i++;
                         break;
                     }
@@ -73,7 +73,7 @@ int pawns_in_file(std::vector<std::vector <Piece *> >& board, int file, bool col
     int count = 0;
     
     for (int i = 1; i < 7; i++) {
-        if (board[file][i] != NULL && board[file][i]->isWhite() == color && dynamic_cast<Pawn *>(board[file][i]) != NULL) {
+        if (board[file][i] != NULL && board[file][i]->is_white() == color && dynamic_cast<Pawn *>(board[file][i]) != NULL) {
             count++;
         }
     }
@@ -107,5 +107,4 @@ int get_mobility_advantage (std::vector<std::vector <Piece *> >& baord) {
     
     return white_mobility_advantage - black_mobility_advantage;
 }
-
 

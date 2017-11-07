@@ -30,7 +30,7 @@ public:
     int get_x_position();
     int get_y_position();
     int get_material_value();
-    bool isWhite();
+    bool is_white();
     
     void set_x_position(int x_position);
     void set_y_position(int y_position);

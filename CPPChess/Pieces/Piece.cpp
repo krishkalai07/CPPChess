@@ -30,7 +30,7 @@ int Piece::get_material_value() {
     return material_value;
 }
 
-bool Piece::isWhite() {
+bool Piece::is_white() {
     return color;
 }
 

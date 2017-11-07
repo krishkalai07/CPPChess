@@ -17,27 +17,33 @@ Queen::~Queen() {
 }
 
 void Queen::get_possible_move_list(std::vector<Point>& point_list) {
-    attack_per_direction(board, point_list, x_position, y_position, -1, -1, false);
-    attack_per_direction(board, point_list, x_position, y_position, -1, 1, false);
-    attack_per_direction(board, point_list, x_position, y_position, 1, -1, false);
-    attack_per_direction(board, point_list, x_position, y_position, 1, 1, false);
+    bishop_attack(board, point_list, x_position, y_position, false);
+    rook_attack(board, point_list, x_position, y_position, false);
     
-    attack_per_direction(board, point_list, x_position, y_position, 0, 1, false);
-    attack_per_direction(board, point_list, x_position, y_position, 1, 0, false);
-    attack_per_direction(board, point_list, x_position, y_position, 0, -1, false);
-    attack_per_direction(board, point_list, x_position, y_position, -1, 0, false);
+//    attack_per_direction(board, point_list, x_position, y_position, -1, -1, false);
+//    attack_per_direction(board, point_list, x_position, y_position, -1, 1, false);
+//    attack_per_direction(board, point_list, x_position, y_position, 1, -1, false);
+//    attack_per_direction(board, point_list, x_position, y_position, 1, 1, false);
+//
+//    attack_per_direction(board, point_list, x_position, y_position, 0, 1, false);
+//    attack_per_direction(board, point_list, x_position, y_position, 1, 0, false);
+//    attack_per_direction(board, point_list, x_position, y_position, 0, -1, false);
+//    attack_per_direction(board, point_list, x_position, y_position, -1, 0, false);
 }
 
 void Queen::get_controlled_squares(std::vector<Point>& point_list, std::vector<std::vector<Piece*> >& temp_board) {
-    attack_per_direction(temp_board, point_list, x_position, y_position, -1, -1, true);
-    attack_per_direction(temp_board, point_list, x_position, y_position, -1, 1, true);
-    attack_per_direction(temp_board, point_list, x_position, y_position, 1, -1, true);
-    attack_per_direction(temp_board, point_list, x_position, y_position, 1, 1, true);
+    bishop_attack(temp_board, point_list, x_position, y_position, true);
+    rook_attack(temp_board, point_list, x_position, y_position, true);
     
-    attack_per_direction(temp_board, point_list, x_position, y_position, 0, 1, true);
-    attack_per_direction(temp_board, point_list, x_position, y_position, 1, 0, true);
-    attack_per_direction(temp_board, point_list, x_position, y_position, 0, -1, true);
-    attack_per_direction(temp_board, point_list, x_position, y_position, -1, 0, true);
+//    attack_per_direction(temp_board, point_list, x_position, y_position, -1, -1, true);
+//    attack_per_direction(temp_board, point_list, x_position, y_position, -1, 1, true);
+//    attack_per_direction(temp_board, point_list, x_position, y_position, 1, -1, true);
+//    attack_per_direction(temp_board, point_list, x_position, y_position, 1, 1, true);
+//
+//    attack_per_direction(temp_board, point_list, x_position, y_position, 0, 1, true);
+//    attack_per_direction(temp_board, point_list, x_position, y_position, 1, 0, true);
+//    attack_per_direction(temp_board, point_list, x_position, y_position, 0, -1, true);
+//    attack_per_direction(temp_board, point_list, x_position, y_position, -1, 0, true);
 }
 
 bool Queen::validate_move(int to_x, int to_y) {
@@ -62,7 +68,7 @@ bool Queen::validate_move(int to_x, int to_y) {
             return true;
         }
         else {
-            if (board[to_x][to_y]->isWhite() != color) {
+            if (board[to_x][to_y]->is_white() != color) {
                 return true;
             }
         }

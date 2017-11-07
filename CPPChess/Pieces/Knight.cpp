@@ -24,7 +24,7 @@ void Knight::get_possible_move_list(std::vector<Point>& point_list) {
             }
             
             if (x_position + i >= 0 && x_position + i < 8 && y_position + j >= 0 && y_position + j < 8) {
-                if (board[x_position + i][y_position + j] == NULL || this->color != board[x_position + i][y_position + j]->isWhite()) {
+                if (board[x_position + i][y_position + j] == NULL || this->color != board[x_position + i][y_position + j]->is_white()) {
                     point_list.push_back(Point(x_position + i, y_position + j));
                 }
             }
@@ -57,7 +57,7 @@ bool Knight::validate_move(int x, int y) {
             return true;
         }
         else {
-            if (board[x][y]->isWhite() != color) {
+            if (board[x][y]->is_white() != color) {
                 return true;
             }
         }
