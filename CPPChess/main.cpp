@@ -61,7 +61,9 @@ int main(int argc, const char * argv[]) {
         }
     }
     
-    decompress_board(board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", white_king, black_king, white_control, black_control, turn, halfmove_clock, fullmove_counter);
+    std::string starting_position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    std::string current_testing = "rn1qkbnr/pppbpppp/8/1B1p4/3PP3/8/PPP2PPP/RNBQK1NR b KQkq d3 0 3";
+    decompress_board(board, current_testing, white_king, black_king, white_control, black_control, turn, halfmove_clock, fullmove_counter);
     //decompress_board(board, "r1n4N/1Kp2b1p/PPp1pr2/PRbQ1pR1/2PP1p1k/PN3B1P/p1PB1q1p/5n2 w - - 0 1", white_king, black_king, white_control, black_control, turn, halfmove_clock, fullmove_counter);
     print_board(board);
     FEN_values.push_back(compress_board(board));
@@ -82,12 +84,12 @@ int main(int argc, const char * argv[]) {
     }
     
     while (!draw && !game_ended && !fin.eof()) {
-        fin >> input;
-        std::cout << (turn ? std::to_string(fullmove_counter) + " " : "") << input << std::endl;
-//        std::cin >> input;
+        //fin >> input;
+        //std::cout << (turn ? std::to_string(fullmove_counter) + " " : "") << input << std::endl;
+        std::cin >> input;
         
         if (!is_valid_input(input)) {
-            break;
+            continue;
         }
     
         if (input.length() == 4) {

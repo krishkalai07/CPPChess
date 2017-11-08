@@ -88,17 +88,9 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
                                 return board[from_x][from_y]->is_white() == king->is_white();
                             }
                             else {
-                                return board[tmp_y][tmp_y]->is_white() == king->is_white();
+                                return board[tmp_x][tmp_y]->is_white() == king->is_white();
                             }
                         }
-                        else {
-                            move_piece(board, to_x, to_y, from_x, from_y);
-                            return true;
-                        }
-                    }
-                    else {
-                        move_piece(board, to_x, to_y, from_x, from_y);
-                        return true;
                     }
                 }
                 else if (direction == 10 || direction == 14 || direction == 25 || direction == 21) {
@@ -109,17 +101,9 @@ bool is_legal_move (std::vector<std::vector<Piece *> > board, int from_x, int fr
                                 return board[from_x][from_y]->is_white() == king->is_white();
                             }
                             else {
-                                return board[tmp_y][tmp_y]->is_white() == king->is_white();
+                                return board[tmp_x][tmp_y]->is_white() == king->is_white();
                             }
                         }
-                        else {
-                            move_piece(board, to_x, to_y, from_x, from_y);
-                            return true;
-                        }
-                    }
-                    else {
-                        move_piece(board, to_x, to_y, from_x, from_y);
-                        return true;
                     }
                 }
             }
